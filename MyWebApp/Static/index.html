@@ -5,10 +5,56 @@
     <title></title>
     <script src="../Scripts/jquery-3.3.1.js"></script>
     <script src="../Scripts/indexScript.js"></script>
+    <style>
+        h3{
+            color : darkblue;
+        }
+        button#pretragaButton{
+            width:30%;
+        }
+    </style>
 </head>
 <body>
+    <h3>Fitnes centri</h3>
     <div id="tableDiv">
 
+    </div>
+    <h3>Pretraga</h3>
+    <div id="pretraga">
+        <table>
+            <tr>
+                <td>
+                    Naziv:
+                </td>
+                <td colspan="2">
+                    <input type="text" id="nazivPretraga" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Adresa:
+                </td>
+                <td colspan="2">
+                    <input type="text" id="adresaPretraga" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Godina otvaranja:
+                </td>
+                <td>
+                    <input type="text" id="minGodinaPretraga" />&nbsp;-
+                </td>
+                <td>
+                    <input type="text" id="maxGodinaPretraga" />
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <button id="pretragaButton">Pretrazi</button>
+                </td>
+            </tr>
+        </table>
     </div>
 </body>
 </html>

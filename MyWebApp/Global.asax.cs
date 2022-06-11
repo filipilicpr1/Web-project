@@ -24,6 +24,7 @@ namespace MyWebApp
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             SetDateFormat("dd/MM/yyyy");
             LoadUsers(Server.MapPath("~/App_Data/Korisnik.txt"));
+
         }
 
         private void SetDateFormat(string dateFormat)

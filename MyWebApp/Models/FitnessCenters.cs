@@ -12,9 +12,9 @@ namespace MyWebApp.Models
 
         public static List<FitnessCenter> FitnessCentersList { get; set; }
 
-        public static FitnessCenter FindByName(string name)
+        public static List<FitnessCenter> FindByName(string name)
         {
-            return FitnessCentersList.Find(item => String.Equals(item.Name, name));
+            return FitnessCentersList.FindAll(item => String.Equals(item.Name, name));
         }
 
         public static FitnessCenter FindByAddress(string address)

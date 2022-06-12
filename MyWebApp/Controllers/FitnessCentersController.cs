@@ -14,67 +14,81 @@ namespace MyWebApp.Controllers
         {
             return FitnessCenters.FitnessCentersList;
         }
-
-
+        
         public List<FitnessCenter> Get(string name, string address, int minYear, int maxYear)
         {
-            bool searchByName = !String.Equals(name,"noName");
+            bool searchByName = !String.Equals(name, "noName");
             bool searchByAddress = !String.Equals(address, "noAddress");
-            List<FitnessCenter> retVal = new List<FitnessCenter>();
-            if (searchByName)
-            {
-                FitnessCenter fc = FitnessCenters.FindByName(name);
-                if(fc == null)
-                {
-                    return retVal;
-                }
-                if (searchByAddress)
-                {
-                    if (String.Equals(fc.Address, address) && fc.YearCreated >= minYear && fc.YearCreated <= maxYear)
-                    {
-                        retVal.Add(fc);
-                    }
-                } else
-                {
-                    if(fc.YearCreated >= minYear && fc.YearCreated <= maxYear)
-                    {
-                        retVal.Add(fc);
-                    }
-                }
-                return retVal;
-            }
 
             if (searchByAddress)
             {
-                FitnessCenter fc = FitnessCenters.FindByAddress(address);
-                if (fc == null)
-                {
-                    return retVal;
-                }
-                if (fc.YearCreated >= minYear && fc.YearCreated <= maxYear)
-                {
-                    retVal.Add(fc);
-                    return retVal;
-                }
+                return SearchByAddress(name, address, minYear, maxYear);
             }
 
-            foreach(var fc in FitnessCenters.FitnessCentersList)
+            if (searchByName)
             {
-                if(fc.YearCreated >= minYear && fc.YearCreated <= maxYear)
-                {
-                    retVal.Add(fc);
-                }
+                return SearchByName(name, minYear, maxYear);
             }
 
-            return retVal;
+            return SearchByYear(minYear, maxYear);
+            
+        }
+
+        public FitnessCenter Get(string address)
+        {
+            address = Uri.UnescapeDataString(address);
+            address = address.Replace("+", " ");
+            return FitnessCenters.FindByAddress(address);
         }
 
 
-        public FitnessCenter Get(string name)
+
+        private List<FitnessCenter> SearchByAddress(string name, string address, int minYear, int maxYear)
         {
-            name = Uri.UnescapeDataString(name);
-            name = name.Replace("+", " ");
-            return FitnessCenters.FindByName(name);
+            bool searchByName = !String.Equals(name, "noName");
+            List<FitnessCenter> retVal = new List<FitnessCenter>();
+            FitnessCenter fc = FitnessCenters.FindByAddress(address);
+            if (fc == null)
+            {
+                return retVal;
+            }
+            if (fc.YearCreated < minYear || fc.YearCreated > maxYear)
+            {
+                return retVal;
+            }
+            if (searchByName && !String.Equals(fc.Name, name))
+            {
+                return retVal;
+            }
+            retVal.Add(fc);
+            return retVal;
+        }
+
+        private List<FitnessCenter> SearchByName(string name, int minYear, int maxYear)
+        {
+            List<FitnessCenter> retVal = new List<FitnessCenter>();
+            var temp = FitnessCenters.FindByName(name);
+            foreach (var item in temp)
+            {
+                if (item.YearCreated >= minYear && item.YearCreated <= maxYear)
+                {
+                    retVal.Add(item);
+                }
+            }
+            return retVal;
+        }
+
+        private List<FitnessCenter> SearchByYear(int minYear, int maxYear)
+        {
+            List<FitnessCenter> retVal = new List<FitnessCenter>();
+            foreach (var fc in FitnessCenters.FitnessCentersList)
+            {
+                if (fc.YearCreated >= minYear && fc.YearCreated <= maxYear)
+                {
+                    retVal.Add(fc);
+                }
+            }
+            return retVal;
         }
     }
 }

@@ -12,14 +12,24 @@ namespace MyWebApp.Models
 
         public static List<FitnessCenter> FitnessCentersList { get; set; }
 
+        private static int GenerateId()
+        {
+            return Math.Abs(Guid.NewGuid().GetHashCode());
+        }
+
+        public static FitnessCenter FindById(int id)
+        {
+            return FitnessCentersList.Find(item => item.Id == id);
+        }
+
         public static List<FitnessCenter> FindByName(string name)
         {
             return FitnessCentersList.FindAll(item => String.Equals(item.Name, name));
         }
 
-        public static FitnessCenter FindByAddress(string address)
+        public static List<FitnessCenter> FindByAddress(string address)
         {
-            return FitnessCentersList.Find(item => String.Equals(item.Address, address));
+            return FitnessCentersList.FindAll(item => String.Equals(item.Address, address));
         }
 
         public static void LoadFitnessCenters()
@@ -43,15 +53,16 @@ namespace MyWebApp.Models
         {
             FitnessCenter fc = new FitnessCenter();
             string[] values = line.Split('-');
-            fc.Name = values[0];
-            fc.Address = values[1];
-            fc.YearCreated = int.Parse(values[2]);
-            fc.Owner = Users.FindByUsername(values[3]);
-            fc.MonthlySubscription = int.Parse(values[4]);
-            fc.YearlySubscription = int.Parse(values[5]);
-            fc.TrainingCost = int.Parse(values[6]);
-            fc.GroupTrainingCost = int.Parse(values[7]);
-            fc.PersonalTrainingCost = int.Parse(values[8]);
+            fc.Id = int.Parse(values[0]);
+            fc.Name = values[1];
+            fc.Address = values[2];
+            fc.YearCreated = int.Parse(values[3]);
+            fc.Owner = Users.FindByUsername(values[4]);
+            fc.MonthlySubscription = int.Parse(values[5]);
+            fc.YearlySubscription = int.Parse(values[6]);
+            fc.TrainingCost = int.Parse(values[7]);
+            fc.GroupTrainingCost = int.Parse(values[8]);
+            fc.PersonalTrainingCost = int.Parse(values[9]);
             return fc;
         }
     }

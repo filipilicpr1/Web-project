@@ -7,6 +7,7 @@ namespace MyWebApp.Models
 {
     public class FitnessCenter
     {
+        public int Id { get; set; }
         public string Name { get; set; }
         public string Address { get; set; }
         public int YearCreated { get; set; }

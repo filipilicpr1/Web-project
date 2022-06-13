@@ -34,11 +34,11 @@ namespace MyWebApp.Controllers
             
         }
 
-        public FitnessCenter Get(string address)
+        public FitnessCenter Get(int id)
         {
-            address = Uri.UnescapeDataString(address);
-            address = address.Replace("+", " ");
-            return FitnessCenters.FindByAddress(address);
+            //address = Uri.UnescapeDataString(address);
+            //address = address.Replace("+", " ");
+            return FitnessCenters.FindById(id);
         }
 
 
@@ -47,20 +47,27 @@ namespace MyWebApp.Controllers
         {
             bool searchByName = !String.Equals(name, "noName");
             List<FitnessCenter> retVal = new List<FitnessCenter>();
-            FitnessCenter fc = FitnessCenters.FindByAddress(address);
-            if (fc == null)
+            var temp = FitnessCenters.FindByAddress(address);
+            foreach(var fc in temp)
+            {
+                if(fc.YearCreated >= minYear && fc.YearCreated <= maxYear)
+                {
+                    retVal.Add(fc);
+                }
+            }
+            if (!searchByName)
             {
                 return retVal;
             }
-            if (fc.YearCreated < minYear || fc.YearCreated > maxYear)
+            temp = retVal;
+            retVal = new List<FitnessCenter>();
+            foreach(var fc in temp)
             {
-                return retVal;
+                if (String.Equals(fc.Name, name))
+                {
+                    retVal.Add(fc);
+                }
             }
-            if (searchByName && !String.Equals(fc.Name, name))
-            {
-                return retVal;
-            }
-            retVal.Add(fc);
             return retVal;
         }
 

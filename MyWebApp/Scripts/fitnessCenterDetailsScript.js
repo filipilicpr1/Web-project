@@ -1,6 +1,6 @@
 ﻿$(document).ready(function () {
-    let address = $(location).attr('href').split('?')[1];
-    $.get("/api/fitnesscenters/", { 'address': address }, function (data, status) {
+    let id = $(location).attr('href').split('?')[1];
+    $.get("/api/fitnesscenters/", { 'id': id }, function (data, status) {
         $("#naziv").html(data.Name);
         $("#adresa").html(data.Address);
         $("#godina").html(data.YearCreated);

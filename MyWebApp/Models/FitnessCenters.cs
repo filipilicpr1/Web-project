@@ -10,6 +10,8 @@ namespace MyWebApp.Models
     {
         public static string FilePath { get; set; }
 
+        public static string OwnerFilePath { get; set; }
+
         public static List<FitnessCenter> FitnessCentersList { get; set; }
 
         private static int GenerateId()
@@ -32,19 +34,26 @@ namespace MyWebApp.Models
             return FitnessCentersList.FindAll(item => String.Equals(item.Address, address));
         }
 
-        public static void LoadFitnessCenters()
+        public static void LoadInitialFitnessCenters()
         {
-            if(FitnessCentersList == null)
-            {
-                FitnessCentersList = new List<FitnessCenter>();
-            }
-
+            FitnessCentersList = new List<FitnessCenter>();
             StreamReader sr = new StreamReader(FilePath);
             string line;
             while ((line = sr.ReadLine()) != null)
             {
                 FitnessCenter fc = GetSingleFitnessCenter(line);
                 FitnessCentersList.Add(fc);
+            }
+            sr.Close();
+        }
+
+        public static void FinishLoading()
+        {
+            StreamReader sr = new StreamReader(OwnerFilePath);
+            string line;
+            while ((line = sr.ReadLine()) != null)
+            {
+                AssignOwner(line);
             }
             sr.Close();
         }
@@ -57,13 +66,20 @@ namespace MyWebApp.Models
             fc.Name = values[1];
             fc.Address = values[2];
             fc.YearCreated = int.Parse(values[3]);
-            fc.Owner = Users.FindByUsername(values[4]);
-            fc.MonthlySubscription = int.Parse(values[5]);
-            fc.YearlySubscription = int.Parse(values[6]);
-            fc.TrainingCost = int.Parse(values[7]);
-            fc.GroupTrainingCost = int.Parse(values[8]);
-            fc.PersonalTrainingCost = int.Parse(values[9]);
+            fc.MonthlySubscription = int.Parse(values[4]);
+            fc.YearlySubscription = int.Parse(values[5]);
+            fc.TrainingCost = int.Parse(values[6]);
+            fc.GroupTrainingCost = int.Parse(values[7]);
+            fc.PersonalTrainingCost = int.Parse(values[8]);
             return fc;
+        }
+
+        private static void AssignOwner(string line)
+        {
+            string username = line.Split('-')[0];
+            int id = int.Parse(line.Split('-')[1]);
+            FitnessCenter fc = FindById(id);
+            fc.Owner = new User(Users.FindByUsername(username));
         }
     }
 }

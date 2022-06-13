@@ -17,5 +17,20 @@ namespace MyWebApp.Models
         public int TrainingCost { get; set; }
         public int GroupTrainingCost { get; set; }
         public int PersonalTrainingCost { get; set; }
+
+        public FitnessCenter() {}
+
+        public FitnessCenter(FitnessCenter fc)
+        {
+            this.Id = fc.Id;
+            this.Name = fc.Name;
+            this.Address = fc.Address;
+            this.YearCreated = fc.YearCreated;
+            this.MonthlySubscription = fc.MonthlySubscription;
+            this.YearlySubscription = fc.YearlySubscription;
+            this.TrainingCost = fc.TrainingCost;
+            this.GroupTrainingCost = fc.GroupTrainingCost;
+            this.PersonalTrainingCost = fc.PersonalTrainingCost;
+        }
     }
 }

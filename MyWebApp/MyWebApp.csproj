@@ -162,15 +162,28 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\Comment.cs" />
+    <Compile Include="Models\Comments.cs" />
     <Compile Include="Models\FitnessCenter.cs" />
     <Compile Include="Models\FitnessCenters.cs" />
+    <Compile Include="Models\GroupTraining.cs" />
+    <Compile Include="Models\GroupTrainings.cs" />
     <Compile Include="Models\User.cs" />
     <Compile Include="Models\Users.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Data\FitnesCentar.txt" />
+    <Content Include="App_Data\FitnesCentarGrupniTrening.txt" />
+    <Content Include="App_Data\FitnesCentarKomentar.txt" />
+    <Content Include="App_Data\FitnesCentarTrener.txt" />
+    <Content Include="App_Data\GrupniTrening.txt" />
+    <Content Include="App_Data\GrupniTreningPosetilac.txt" />
+    <Content Include="App_Data\GrupniTreningTrener.txt" />
+    <Content Include="App_Data\Komentar.txt" />
     <Content Include="App_Data\Korisnik.txt" />
+    <Content Include="App_Data\PosetilacKomentar.txt" />
+    <Content Include="App_Data\VlasnikFitnesCentar.txt" />
     <Content Include="Areas\HelpPage\HelpPage.css" />
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />

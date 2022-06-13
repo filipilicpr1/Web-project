@@ -14,7 +14,7 @@ namespace MyWebApp.Controllers
         {
             return FitnessCenters.FitnessCentersList;
         }
-        
+
         public List<FitnessCenter> Get(string name, string address, int minYear, int maxYear)
         {
             bool searchByName = !String.Equals(name, "noName");
@@ -40,8 +40,6 @@ namespace MyWebApp.Controllers
             //address = address.Replace("+", " ");
             return FitnessCenters.FindById(id);
         }
-
-
 
         private List<FitnessCenter> SearchByAddress(string name, string address, int minYear, int maxYear)
         {

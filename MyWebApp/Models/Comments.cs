@@ -26,6 +26,11 @@ namespace MyWebApp.Models
             return CommentsList.Find(item => item.Id == id);
         }
 
+        public static List<Comment> FindAllByFitnessCenterId(int fitnessId)
+        {
+            return CommentsList.FindAll(item => item.RelatedFitnessCenter.Id == fitnessId);
+        }
+
         public static void LoadInitialComments()
         {
             CommentsList = new List<Comment>();

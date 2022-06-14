@@ -26,6 +26,12 @@ namespace MyWebApp
                 defaults: new {name = "", address = "", minYear = 0, maxYear = 10000 }
             );
 
+            config.Routes.MapHttpRoute(
+                name: "SearchGroupTrainingsByFitnessCenterId",
+                routeTemplate: "api/{controller}/{fitnessId}",
+                defaults: new { fitnessId = RouteParameter.Optional }
+            );
+
         }
     }
 }

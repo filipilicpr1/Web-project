@@ -26,6 +26,11 @@ namespace MyWebApp.Models
             return GroupTrainingsList.Find(item => item.Id == id);
         }
 
+        public static List<GroupTraining> FindAllByFitnessCenterId(int fitnessId)
+        {
+            return GroupTrainingsList.FindAll(item => item.FitnessCenterLocation.Id == fitnessId);
+        }
+
         public static void LoadInitialGroupTrainings()
         {
             GroupTrainingsList = new List<GroupTraining>();

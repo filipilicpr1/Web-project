@@ -43,8 +43,6 @@
             GenerateTableContent(data);
         });
     });
-
-
     function GenerateTableContent(data) {
         let tableContent = "<table id='myTable' border='1'><tr><th id='nazivSort'>Naziv</th><th id='adresaSort'>Adresa</th><th id='godinaSort'>Godina otvaranja</th><th></th></tr>";
         for (fitnessCenter in data) {

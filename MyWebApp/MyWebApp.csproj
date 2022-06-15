@@ -196,6 +196,7 @@
     <Content Include="Global.asax" />
     <Content Include="Scripts\fitnessCenterDetailsScript.js" />
     <Content Include="Scripts\indexScript.js" />
+    <Content Include="Scripts\registerScript.js" />
     <Content Include="Static\fitnessCenterDetails.html" />
     <Content Include="Static\index.html" />
     <Content Include="Scripts\bootstrap.js" />

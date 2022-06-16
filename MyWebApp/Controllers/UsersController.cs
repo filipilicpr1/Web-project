@@ -26,7 +26,8 @@ namespace MyWebApp.Controllers
             {
                 return BadRequest(errorMessage);
             }
-            
+            user.UserType = EUserType.POSETILAC;
+            Users.AddUser(user);
             return Ok("Korisnik uspesno registrovan");
         }
 

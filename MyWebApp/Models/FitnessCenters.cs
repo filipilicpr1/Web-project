@@ -61,7 +61,7 @@ namespace MyWebApp.Models
         private static FitnessCenter GetSingleFitnessCenter(string line)
         {
             FitnessCenter fc = new FitnessCenter();
-            string[] values = line.Split('-');
+            string[] values = line.Split(';');
             fc.Id = int.Parse(values[0]);
             fc.Name = values[1];
             fc.Address = values[2];
@@ -76,10 +76,10 @@ namespace MyWebApp.Models
 
         private static void AssignOwner(string line)
         {
-            string username = line.Split('-')[0];
-            int id = int.Parse(line.Split('-')[1]);
+            int userId = int.Parse(line.Split(';')[0]);
+            int id = int.Parse(line.Split(';')[1]);
             FitnessCenter fc = FindById(id);
-            fc.Owner = new User(Users.FindByUsername(username));
+            fc.Owner = new User(Users.FindById(userId));
         }
     }
 }

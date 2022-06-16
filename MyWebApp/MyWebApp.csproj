@@ -160,6 +160,7 @@
     <Compile Include="Controllers\FitnessCentersController.cs" />
     <Compile Include="Controllers\GroupTrainingsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\UsersController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -196,6 +197,7 @@
     <Content Include="Global.asax" />
     <Content Include="Scripts\fitnessCenterDetailsScript.js" />
     <Content Include="Scripts\indexScript.js" />
+    <Content Include="Scripts\loginScript.js" />
     <Content Include="Scripts\registerScript.js" />
     <Content Include="Static\fitnessCenterDetails.html" />
     <Content Include="Static\index.html" />

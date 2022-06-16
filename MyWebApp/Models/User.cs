@@ -9,6 +9,7 @@ namespace MyWebApp.Models
 
     public class User
     {
+        public int Id { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
         public string Name { get; set; }
@@ -26,6 +27,7 @@ namespace MyWebApp.Models
 
         public User(User u)
         {
+            this.Id = u.Id;
             this.Username = u.Username;
             this.Password = u.Password;
             this.Name = u.Name;

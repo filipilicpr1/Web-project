@@ -1,4 +1,4 @@
-9453-Veoma sam zadovoljan-5
-3254-Vrh je-5
-8432-Skoro pa odlicno-4
-4144-Uzas-2
+9453;Veoma sam zadovoljan;5
+3254;Vrh je;5
+8432;Skoro pa odlicno;4
+4144;Uzas;2

@@ -6,6 +6,7 @@
     <script src="../Scripts/jquery-3.3.1.js"></script>
     <script src="../Scripts/indexScript.js"></script>
     <script src="../Scripts/registerScript.js"></script>
+    <script src="../Scripts/loginScript.js"></script>
     <style>
         h3{
             color : darkblue;
@@ -21,9 +22,16 @@
         div#fitnessCenters{
             float:left;
         }
+        div#buttonsDiv{
+            float:right;
+        }
         button#submitButton{
             width : 100%;
             height : 100%;
+        }
+        button#editButton {
+            width: 100%;
+            height: 100%;
         }
     </style>
 </head>
@@ -72,83 +80,124 @@
         </div>
     </div>
     <div id="register">
-        <table>
-            <tr>
-                <td>Korisnicko ime :</td>
-                <td><input type="text" id="registerUsername" /></td>
-                <td align="left">
-                    <font id="invalidUsername"></font>
-                </td>
-            </tr>
-            <tr>
-                <td>Lozinka :</td>
-                <td><input type="password" id="registerPassword" /></td>
-                <td align="left">
-                    <font id="invalidPassword"></font>
-                </td>
-            </tr>
-            <tr>
-                <td>Potvrdite lozinku :</td>
-                <td><input type="password" id="registerConfirmPassword" /></td>
-                <td align="left">
-                    <font id="invalidConfirmPassword"></font>
-                </td>
-            </tr>
-            <tr>
-                <td>Email :</td>
-                <td><input type="text" id="registerEmail" /></td>
-                <td align="left">
-                    <font id="invalidEmail"></font>
-                </td>
-            </tr>
-            <tr>
-                <td>Ime :</td>
-                <td><input type="text" id="registerName" /></td>
-                <td align="left">
-                    <font id="invalidName"></font>
-                </td>
-            </tr>
-            <tr>
-                <td>Prezime :</td>
-                <td><input type="text" id="registerLastName" /></td>
-                <td align="left">
-                    <font id="invalidLastName"></font>
-                </td>
-            </tr>
-            <tr>
-                <td>Pol :</td>
-                <td>
-                    Muski&nbsp;<input type="radio" name="radioGender"  value="Muski" checked="true"/>
-                    Zenski&nbsp;<input type="radio" name="radioGender"  value="Zenski" />
-                    Drugo&nbsp;<input type="radio" name="radioGender"  value="Drugo" />
-                </td>
-            </tr>
-            <tr>
-                <td>Datum rodjenja :</td>
-                <td>
-                    Godina&nbsp;
-                    <select id="registerYear"></select>
-                    <span id="regMonth">
-                        <font id="fontMonth">
-                        </font>
-                        <select id="registerMonth"></select>
-                    </span>
-                    <span id="regDay">
-                        <font id="fontDay">
-                        </font>
-                        <select id="registerDay"></select>
-                    </span>
-                </td>
-                <td align="left">
-                    <font id="invalidDate"></font>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <button id="submitButton">Registruj se</button>
-                </td>
-            </tr>
-        </table>
+        <div>
+            <button id="showRegisterTableButton">Registracija novog korisnika</button>
+        </div>
+        <div>
+            <button id="showEditTable">Izmeni profil</button>
+        </div>
+        <br />
+        <div id="registerTable">
+            <table>
+                <tr>
+                    <td>Korisnicko ime :</td>
+                    <td><input type="text" id="registerUsername" /></td>
+                    <td align="left">
+                        <font id="invalidUsername"></font>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Lozinka :</td>
+                    <td><input type="password" id="registerPassword" /></td>
+                    <td align="left">
+                        <font id="invalidPassword"></font>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Potvrdite lozinku :</td>
+                    <td><input type="password" id="registerConfirmPassword" /></td>
+                    <td align="left">
+                        <font id="invalidConfirmPassword"></font>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Email :</td>
+                    <td><input type="text" id="registerEmail" /></td>
+                    <td align="left">
+                        <font id="invalidEmail"></font>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Ime :</td>
+                    <td><input type="text" id="registerName" /></td>
+                    <td align="left">
+                        <font id="invalidName"></font>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Prezime :</td>
+                    <td><input type="text" id="registerLastName" /></td>
+                    <td align="left">
+                        <font id="invalidLastName"></font>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Pol :</td>
+                    <td>
+                        Muski&nbsp;<input id="initialRadio" type="radio" name="radioGender" value="Muski" checked="checked" />
+                        Zenski&nbsp;<input type="radio" name="radioGender" value="Zenski" />
+                        Drugo&nbsp;<input type="radio" name="radioGender" value="Drugo" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>Datum rodjenja :</td>
+                    <td>
+                        Godina&nbsp;
+                        <select id="registerYear"></select>
+                        <span id="regMonth">
+                            <font id="fontMonth">
+                            </font>
+                            <select id="registerMonth"></select>
+                        </span>
+                        <span id="regDay">
+                            <font id="fontDay">
+                            </font>
+                            <select id="registerDay"></select>
+                        </span>
+                    </td>
+                    <td align="left">
+                        <font id="invalidDate"></font>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <button id="submitButton">Registruj se</button>
+                        <button id="editButton">Izmeni</button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <br />
+        <br />
+        <div>
+            <button id="showLoginTableButton">Prijava korisnika</button>
+        </div>
+        <div id="loginTable">
+            <table>
+                <tr>
+                    <td>Korisnicko ime :</td>
+                    <td><input type="text" id="loginUsername" /></td>
+                    <td align="left">
+                        <font id="invalidLoginUsername"></font>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Lozinka :</td>
+                    <td><input type="password" id="loginPassword" /></td>
+                    <td align="left">
+                        <font id="invalidLoginPassword"></font>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <button id="loginButton">Prijava</button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div>
+            <button id="logoutButton">Odjava</button>
+        </div>
     </div>
 </body>
 </html>

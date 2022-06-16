@@ -53,7 +53,7 @@ namespace MyWebApp.Models
         private static GroupTraining GetSingleGroupTraining(string line)
         {
             GroupTraining gt = new GroupTraining();
-            string[] values = line.Split('-');
+            string[] values = line.Split(';');
             gt.Id = int.Parse(values[0]);
             gt.Name = values[1];
             gt.TrainingType = values[2];
@@ -76,8 +76,8 @@ namespace MyWebApp.Models
 
         private static void AssignFitnessCenter(string line)
         {
-            int fitnessCenterId = int.Parse(line.Split('-')[0]);
-            int groupTrainingId = int.Parse(line.Split('-')[1]);
+            int fitnessCenterId = int.Parse(line.Split(';')[0]);
+            int groupTrainingId = int.Parse(line.Split(';')[1]);
             GroupTraining gt = GroupTrainings.FindById(groupTrainingId);
             gt.FitnessCenterLocation = new FitnessCenter(FitnessCenters.FindById(fitnessCenterId));
         }
@@ -95,10 +95,10 @@ namespace MyWebApp.Models
 
         private static void AssignGroupTrainingVisitor(string line)
         {
-            int id = int.Parse(line.Split('-')[0]);
-            string username = line.Split('-')[1];
+            int id = int.Parse(line.Split(';')[0]);
+            int userId = int.Parse(line.Split(';')[1]);
             GroupTraining gt = GroupTrainings.FindById(id);
-            gt.Visitors.Add(new User(Users.FindByUsername(username)));
+            gt.Visitors.Add(new User(Users.FindById(userId)));
             gt.VisitorCount = gt.Visitors.Count;
         }
     }

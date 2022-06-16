@@ -53,7 +53,7 @@ namespace MyWebApp.Models
         private static Comment GetSingleComment(string line)
         {
             Comment c = new Comment();
-            string[] values = line.Split('-');
+            string[] values = line.Split(';');
             c.Id = int.Parse(values[0]);
             c.Text = values[1];
             c.Rating = int.Parse(values[2]);
@@ -73,10 +73,10 @@ namespace MyWebApp.Models
 
         private static void AssignCreator(string line)
         {
-            string username = line.Split('-')[0];
-            int id = int.Parse(line.Split('-')[1]);
+            int userId = int.Parse(line.Split(';')[0]);
+            int id = int.Parse(line.Split(';')[1]);
             Comment c = FindById(id);
-            c.Creator = new User(Users.FindByUsername(username));
+            c.Creator = new User(Users.FindById(userId));
         }
 
         private static void LoadRelatedFitnessCenters()
@@ -92,8 +92,8 @@ namespace MyWebApp.Models
 
         private static void AssignRelatedFitnessCenter(string line)
         {
-            int fitnessCenterId = int.Parse(line.Split('-')[0]);
-            int commentId = int.Parse(line.Split('-')[1]);
+            int fitnessCenterId = int.Parse(line.Split(';')[0]);
+            int commentId = int.Parse(line.Split(';')[1]);
             Comment c = FindById(commentId);
             c.RelatedFitnessCenter = new FitnessCenter(FitnessCenters.FindById(fitnessCenterId));
         }

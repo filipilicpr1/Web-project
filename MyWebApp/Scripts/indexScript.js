@@ -2,6 +2,20 @@
     var ascendingName = false;
     var ascendingAddress = true;
     var ascendingYear = true;
+    var userLoggedIn = sessionStorage.getItem("userLoggedIn"); // null ako nije nista
+    var userId = sessionStorage.getItem("userId");
+
+    if (userId == null || userId == "") {
+        $("#logoutButton").hide();
+        $("#showEditTable").hide();
+    } else {
+        $("#showRegisterTableButton").hide();
+        $("#showLoginTableButton").hide();
+    }
+    $("#registerTable").hide();
+    $("#loginTable").hide();
+    $("#editButton").hide();
+
     $.get("/api/fitnesscenters", function (data, status) {
         GenerateTableContent(data);
     });
@@ -43,6 +57,7 @@
             GenerateTableContent(data);
         });
     });
+    
     function GenerateTableContent(data) {
         let tableContent = "<table id='myTable' border='1'><tr><th id='nazivSort'>Naziv</th><th id='adresaSort'>Adresa</th><th id='godinaSort'>Godina otvaranja</th><th></th></tr>";
         for (fitnessCenter in data) {

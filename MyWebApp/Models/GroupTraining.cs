@@ -24,6 +24,7 @@ namespace MyWebApp.Models
 
         public GroupTraining(GroupTraining gt)
         {
+            this.Id = gt.Id;
             this.Name = gt.Name;
             this.TrainingType = gt.TrainingType;
             this.Duration = gt.Duration;

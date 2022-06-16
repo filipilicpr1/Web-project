@@ -14,10 +14,18 @@ namespace MyWebApp
             // Web API routes
             config.MapHttpAttributeRoutes();
 
+            
+
             config.Routes.MapHttpRoute(
                 name: "DefaultApi",
                 routeTemplate: "api/{controller}/{id}",
                 defaults: new { id = RouteParameter.Optional }
+            );
+
+            config.Routes.MapHttpRoute(
+                name: "Logout",
+                routeTemplate: "api/{controller}/{logout}",
+                defaults: new { logout = RouteParameter.Optional }
             );
 
             config.Routes.MapHttpRoute(
@@ -32,6 +40,11 @@ namespace MyWebApp
                 defaults: new { fitnessId = RouteParameter.Optional }
             );
 
+            config.Routes.MapHttpRoute(
+                name: "LoginUser",
+                routeTemplate: "api/{controller}/{username}/{password}",
+                defaults: new { username = "", password = ""}
+            );
         }
     }
 }

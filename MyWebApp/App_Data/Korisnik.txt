@@ -1,5 +1,8 @@
-filipilic-catsdog123-Filip-Ilic-Muski-filipflyer98@gmail.com-18/12/1998-Vlasnik
-methodjosh-priest69-Josh-Nissan-Muski-pedojosh@gmail.com-25/05/1995-Posetilac
-daredevil-vranje98-Marko-Kostic-Muski-marko.vr@gmail.com-17/12/1998-Trener
-joovana-france1-Jovana-Kostic-Zenski-jovana98@gmail.com-05/05/1998-Trener
-saitama-grusrb-Pera-Peric-Zenski-perica@gmail.com-1/5/2003-Posetilac
+23454;filipilic;catsdog123;Filip;Ilic;Muski;filipflyer98@gmail.com;18/12/1998;VLASNIK
+76523;methodjosh;priest69;Josh;Nissan;Muski;pedojosh@gmail.com;25/05/1995;POSETILAC
+45322;daredevil;vranje98;Marko;Kostic;Muski;marko.vr@gmail.com;17/12/1998;TRENER
+76544;joovana;france1;Jovana;Kostic;Zenski;jovana98@gmail.com;05/05/1998;TRENER
+12222;saitama;grusrb;Pera;Peric;Zenski;perica@gmail.com;01/05/2003;POSETILAC
+34444;macakiti1;MacaKiti98;Miss;Kiti;Drugo;kitkat666@tutanota.com;12/10/2017;POSETILAC
+882674887;noviNovica;novica123;Novica;Velickovic;Drugo;novica@hiv.rs;07/05/1997;POSETILAC
+1383338672;dimi69;dimacar;Dimimi;Serac;Muski;dimi@racunar.mi;20/11/2011;POSETILAC

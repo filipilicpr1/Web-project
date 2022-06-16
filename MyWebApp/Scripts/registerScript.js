@@ -212,6 +212,7 @@
         $.post('/api/users', { 'username': username, 'password': password, 'name': name, 'lastName': lastName, 'gender': gender, 'email': email, 'birthDate': birthDate.toISOString() },
             function (result) {
                 alert(result);
+                $("#showRegisterTableButton").trigger('click');
             }
         ).fail(function (data) {
             alert(data.responseJSON.Message);

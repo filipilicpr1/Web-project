@@ -8,13 +8,16 @@
     if (userId == null || userId == "") {
         $("#logoutButton").hide();
         $("#showEditTable").hide();
+        $("#editButton").hide();
+        $("#submitButton").show();
     } else {
         $("#showRegisterTableButton").hide();
         $("#showLoginTableButton").hide();
+        $("#editButton").show();
+        $("#submitButton").hide();
     }
     $("#registerTable").hide();
     $("#loginTable").hide();
-    $("#editButton").hide();
 
     $.get("/api/fitnesscenters", function (data, status) {
         GenerateTableContent(data);

@@ -211,7 +211,7 @@
         let birthDate = new Date(date);
         $.post('/api/users', { 'username': username, 'password': password, 'name': name, 'lastName': lastName, 'gender': gender, 'email': email, 'birthDate': birthDate.toISOString() },
             function (result) {
-                alert(result.responseJSON.Message);
+                alert(result);
             }
         ).fail(function (data) {
             alert(data.responseJSON.Message);
@@ -246,9 +246,11 @@
             method: 'PUT',
             data: {'id' : id, 'username': username, 'password': password, 'name': name, 'lastName': lastName, 'gender': gender, 'email': email, 'birthDate': birthDate.toISOString() },
             success: function (result) {
-                alert('Korisnik uspesno izmenjen');
+                alert(result);
                 $("#showEditTable").trigger('click');
             }
+        }).fail(function (data) {
+            alert(data.responseJSON.Message);
         });
     });
 

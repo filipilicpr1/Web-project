@@ -27,7 +27,7 @@ namespace MyWebApp.Controllers
                 return BadRequest(errorMessage);
             }
             
-            return Ok("Korisnik izmenjen");
+            return Ok("Korisnik uspesno registrovan");
         }
 
         public IHttpActionResult Put(User user)

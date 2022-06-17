@@ -54,7 +54,7 @@
         }
         let username = $("#loginUsername").val();
         let password = $("#loginPassword").val();
-        $.get('/api/users', { 'username': username, 'password': password},
+        $.post('/api/users/login', { 'username': username, 'password': password},
             function (result) {
                 alert("Uspesno ste se prijavili");
                 let userId = GetCookie("session-id");
@@ -68,7 +68,7 @@
 
     // even handler za logout
     $("#logoutButton").click(function () {
-        $.get('/api/users/', {'logout' : "yes"},
+        $.get('/api/users/logout',
             function (result) {
                 alert(result);
                 let userId = GetCookie("session-id");

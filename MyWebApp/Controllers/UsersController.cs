@@ -44,8 +44,13 @@ namespace MyWebApp.Controllers
             return Ok("Korisnik uspesno izmenjen");
         }
 
-        public HttpResponseMessage Get(string username, string password)
+        [Route("api/users/login")]
+        [HttpPost]
+        [AllowAnonymous]
+        public HttpResponseMessage Login(LoginDTO loginDTO)
         {
+            string username = loginDTO.Username;
+            string password = loginDTO.Password;
             string sessionId = "";
             CookieHeaderValue cookieRecv = Request.Headers.GetCookies("session-id").FirstOrDefault();
             if (cookieRecv != null)
@@ -78,9 +83,11 @@ namespace MyWebApp.Controllers
             resp.Headers.AddCookies(new CookieHeaderValue[] { cookie });
             return resp;
         }
-
+        
+        [Route("api/users/logout")]
         [HttpGet]
-        public HttpResponseMessage Logout(string logout)
+        [AllowAnonymous]
+        public HttpResponseMessage Logout()
         {
             var resp = new HttpResponseMessage();
             CookieHeaderValue cookieRecv = Request.Headers.GetCookies("session-id").FirstOrDefault();

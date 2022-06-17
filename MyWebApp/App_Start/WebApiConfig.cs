@@ -23,12 +23,6 @@ namespace MyWebApp
             );
 
             config.Routes.MapHttpRoute(
-                name: "Logout",
-                routeTemplate: "api/{controller}/{logout}",
-                defaults: new { logout = RouteParameter.Optional }
-            );
-
-            config.Routes.MapHttpRoute(
                 name: "SearchFitnessCenters",
                 routeTemplate: "api/{controller}/{name}/{address}/{minYear}/{maxYear}",
                 defaults: new {name = "", address = "", minYear = 0, maxYear = 10000 }

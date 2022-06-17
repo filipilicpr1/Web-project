@@ -6,6 +6,6 @@
 34444;macakiti1;MacaKiti98;Miss;Kiti;Drugo;kitkat6@tutanota.com;12/10/2017;POSETILAC
 882674887;noviNovica;novica123;Novicaa;Velickovic;Drugo;novica@hiv.rs;07/05/1997;POSETILAC
 1383338672;dimi69;dimacar;Dimimi;Serac;Muski;dimi@racunar.mi;20/11/2011;POSETILAC
-239955583;djole2;djolekralj;Djordje;Kostic;Muski;djole@vr.rs;07/06/2017;POSETILAC
+239955583;djole1;djolekralj;Djordje;Kostic;Muski;djole@vr.rs;07/06/2017;POSETILAC
 328907041;mrav;mravcar;Malisa;Mrav;Drugo;mrav@mrv.com;31/12/2012;POSETILAC
 1802131575;ana;anagod;Anatham;Pha;Muski;ana@god.com;01/04/2002;POSETILAC

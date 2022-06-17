@@ -31,6 +31,19 @@ namespace MyWebApp.Models
             return GroupTrainingsList.FindAll(item => item.FitnessCenterLocation.Id == fitnessId);
         }
 
+        public static void RegisterUserForTraining(User u, GroupTraining gt)
+        {
+            if(gt.VisitorCapacity == gt.VisitorCount)
+            {
+                return;
+            }
+            u.VisitingGroupTrainings.Add(new GroupTraining(gt));
+            gt.Visitors.Add(new User(u));
+            gt.VisitorCount++;
+            // ne treba da se zapamte treninzi, jer u tom fajlu nista nije izmenjeno
+            SaveGroupTrainingVisitors();
+        }
+
         public static void LoadInitialGroupTrainings()
         {
             GroupTrainingsList = new List<GroupTraining>();
@@ -44,12 +57,6 @@ namespace MyWebApp.Models
             sr.Close();
         }
 
-        public static void FinishLoading()
-        {
-            LoadFitnessCenterLocations();
-            LoadFitnessGroupTrainingVisitors();
-        }
-
         private static GroupTraining GetSingleGroupTraining(string line)
         {
             GroupTraining gt = new GroupTraining();
@@ -61,6 +68,12 @@ namespace MyWebApp.Models
             gt.DateOfTraining = DateTime.Parse(values[4]);
             gt.VisitorCapacity = int.Parse(values[5]);
             return gt;
+        }
+
+        public static void FinishLoading()
+        {
+            LoadFitnessCenterLocations();
+            LoadFitnessGroupTrainingVisitors();
         }
 
         private static void LoadFitnessCenterLocations()
@@ -100,6 +113,31 @@ namespace MyWebApp.Models
             GroupTraining gt = GroupTrainings.FindById(id);
             gt.Visitors.Add(new User(Users.FindById(userId)));
             gt.VisitorCount = gt.Visitors.Count;
+        }
+
+        private static void SaveGroupTrainings()
+        {
+            StreamWriter sw = new StreamWriter(FilePath);
+            foreach (GroupTraining gt in GroupTrainingsList)
+            {
+                string text = gt.Id + ";" + gt.Name + ";" + gt.TrainingType + ";" + gt.Duration + ";" + gt.DateOfTraining.ToString("dd/MM/yyyy HH:mm") + ";" + gt.VisitorCapacity;
+                sw.WriteLine(text);
+            }
+            sw.Close();
+        }
+
+        private static void SaveGroupTrainingVisitors()
+        {
+            StreamWriter sw = new StreamWriter(GroupTrainingVisitorFilePath);
+            foreach (GroupTraining gt in GroupTrainingsList)
+            {
+                foreach(User u in gt.Visitors)
+                {
+                    string text = gt.Id + ";" + u.Id;
+                    sw.WriteLine(text);
+                }
+            }
+            sw.Close();
         }
     }
 }

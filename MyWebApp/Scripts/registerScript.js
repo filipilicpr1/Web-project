@@ -1,5 +1,7 @@
 ﻿$(document).ready(function () {
+    // months se koristi za polje za unos meseca, da se lakse izgenerise
     var months = ['Januar', 'Februar', 'Mart', 'April', 'Maj', 'Jun', 'Jul', 'Avgust', 'Septembar', 'Oktobar', 'Novembar', 'Decembar'];
+    // da li je x polje validno
     var isEmailValid = false;
     var isUsernameValid = false;
     var isPasswordValid = false;
@@ -8,29 +10,125 @@
     var isLastNameValid = false;
     var isDateValid = false;
 
+    // event handler kada se klikne na registracija novog korisnika
     $("#showRegisterTableButton").click(function () {
+        // ako je forma prikazana onda je sakrije i izmeni tekst dugmeta
         if ($("#showRegisterTableButton").text() == "Sakrij") {
             $("#registerTable").hide();
             $("#showRegisterTableButton").text("Registracija novog korisnika");
             return;
         }
+        // prvi put kad se klikne dodje ovde
+        // prikaze formu za unos, i izemni tekst dugmeta da je sakrij
         $("#registerTable").show();
         EmptyRegisterFields();
         $("#showRegisterTableButton").text("Sakrij");
     });
 
+    // event handler kada se klikne na izmeni korisnika
+    // radi isto kao za registraciju, tj koristi istu formu
     $("#showEditTable").click(function () {
         if ($("#showEditTable").text() == "Sakrij") {
             $("#registerTable").hide();
             $("#showEditTable").text("Izmeni profil");
             return;
         }
+        
         $("#registerTable").show();
+        // polja se prvo isprazne pa se popune
         EmptyRegisterFields();
         GenerateProfileFields();
         $("#showEditTable").text("Sakrij");
     });
 
+    function EmptyRegisterFields() {
+        // sluzi da isprazni polja forme, jer po default kada se sakrije pa opet pokaze, tekst ostaje
+        // vrednost polja stavi da je "", border da je crn, i validation message stavi da je ""
+        $("#registerUsername").val("");
+        $("#registerUsername").css("border", "1px solid black");
+        $("#invalidUsername").html("");
+
+        $("#registerPassword").val("");
+        $("#registerPassword").css("border", "1px solid black");
+        $("#invalidPassword").html("");
+
+        $("#registerConfirmPassword").val("");
+        $("#registerConfirmPassword").css("border", "1px solid black");
+        $("#invalidConfirmPassword").html("");
+
+        $("#registerEmail").val("");
+        $("#registerEmail").css("border", "1px solid black");
+        $("#invalidEmail").html("");
+
+        $("#registerName").val("");
+        $("#registerName").css("border", "1px solid black");
+        $("#invalidName").html("");
+
+        $("#registerLastName").val("");
+        $("#registerLastName").css("border", "1px solid black");
+        $("#invalidLastName").html("");
+
+        // za datum se sakriju dan i mesec, a mesec i godina se postave na inicijalne vrednosti
+        // dan ne mora da se menja, jer kad se izmeni mesec, onda se ponovo izgenerisu dani i postave se na pocetnu vrednost
+        $("#registerYear").val("2022");
+        $("#registerMonth").val("Januar");
+        $("#registerMonth").hide();
+        $("#registerDay").hide();
+        $("#fontDay").html("");
+        $("#fontMonth").html("");
+        $("#invalidDate").html("");
+        // postavlja pol na muski po default
+        $("input[name='radioGender'][value='Muski']").prop("checked", true);
+        // sve je na pocetku invalid
+        isEmailValid = false;
+        isUsernameValid = false;
+        isPasswordValid = false;
+        isConfirmPasswordValid = false;
+        isNameValid = false;
+        isLastNameValid = false;
+        isDateValid = false;
+    }
+
+    function GenerateProfileFields() {
+        // poziva se samo ako je korisnik ulogovan
+        id = sessionStorage.getItem("userId");
+        $.get('/api/users', { 'id': id }, function (result) {
+            $("#registerUsername").val(result.Username);
+            $("#registerPassword").val(result.Password);
+            $("#registerConfirmPassword").val(result.Password);
+            $("#registerEmail").val(result.Email);
+            $("input[name='radioGender'][value=" + result.Gender + "]").prop("checked", true);
+            $("#registerName").val(result.Name);
+            $("#registerLastName").val(result.LastName);
+            //1998-12-18
+            let year = result.BirthDate.slice(0, 4);
+            let month = result.BirthDate.slice(5, 7);
+            let day = result.BirthDate.slice(8, 10);
+            if (day < 10) {
+                day = day.slice(1, 2); // da dan ne bi bio 01 nego 1 u combobox
+            }
+            $("#registerYear").val(year);
+            $("#registerMonth").val(months[parseInt(month) - 1]); // meseci idu od 0-11 u months niz
+            // za godinu i mesec morda da se trigeruje change, jer u event handler se prikaze sledeci combobox year->month->day
+            $("#registerYear").trigger('change');
+            $("#registerMonth").trigger('change');
+            // na kraju se dodeli dan, jer se u change event za month, day se vrati na 1
+            $("#registerDay").val(day);
+
+            // ucitan korisnik mora da je validan cim je sacuvan, pa su sve vrednosti validne
+            isEmailValid = true;
+            isUsernameValid = true;
+            isPasswordValid = true;
+            isConfirmPasswordValid = true;
+            isNameValid = true;
+            isLastNameValid = true;
+            isDateValid = true;
+        });
+    }
+
+    // validacija za svako polje posebno
+    // ako nije validno postavi se border da je crven i ispise se poruka
+    // ako je validno, border se vrati na crn, i ukloni se poruka
     $("#registerEmail").focusout(function () {
         let email = $("#registerEmail").val();
         let emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
@@ -152,6 +250,7 @@
         isPasswordValid = true;
         $("#registerPassword").css("border", "1px solid black");
         $("#invalidPassword").html("");
+        // ako je confirmPassword vec unet, i onda unesemo password koji je isti, onda treba da confirmPassword automatski bude valid pa trigerujemo focusout
         let confirmPassword = $("#registerConfirmPassword").val();
         if (confirmPassword.length != 0) {
             $("#registerConfirmPassword").trigger('focusout');
@@ -172,128 +271,28 @@
         $("#registerConfirmPassword").css("border", "1px solid black");
         $("#invalidConfirmPassword").html("");
     });
-
-    $("#submitButton").click(function () {
-        if (!isUsernameValid || !isPasswordValid || !isConfirmPasswordValid || !isEmailValid || !isNameValid || !isLastNameValid || !isDateValid) {
-            $("#registerUsername").trigger('focusout');
-            $("#registerPassword").trigger('focusout');
-            $("#registerConfirmPassword").trigger('focusout');
-            $("#registerEmail").trigger('focusout');
-            $("#registerName").trigger('focusout');
-            $("#registerLastName").trigger('focusout');
-            if (!isDateValid) {
-                $("#invalidDate").html("Morate uneti datum rodjenja");
-                $("#invalidDate").css("color", "red");
-            }
-            return;
-        }
-        let username = $("#registerUsername").val();
-        let password = $("#registerPassword").val();
-        let email = $("#registerEmail").val();
-        let name = $("#registerName").val();
-        let lastName = $("#registerLastName").val();
-        let gender = $("input[name='radioGender']:checked").val();
-        let day = $("#registerDay").val();
-        if (day < 10) {
-            day = "0" + day;
-        }
-        let month;
-        for (let i in months) {
-            if (months[i] == $("#registerMonth").val()) {
-                month = parseInt(i) + 1;
-                if (month < 10) {
-                    month = "0" + month;
-                }
-                break;
-            }
-        }
-        let date = $("#registerYear").val() + "-" + month + "-" + day;
-        let birthDate = new Date(date);
-        $.post('/api/users', { 'username': username, 'password': password, 'name': name, 'lastName': lastName, 'gender': gender, 'email': email, 'birthDate': birthDate.toISOString() },
-            function (result) {
-                alert(result);
-                $("#showRegisterTableButton").trigger('click');
-            }
-        ).fail(function (data) {
-            alert(data.responseJSON.Message);
-        });
-    });
-
-    $("#editButton").click(function () {
-        let username = $("#registerUsername").val();
-        let password = $("#registerPassword").val();
-        let email = $("#registerEmail").val();
-        let name = $("#registerName").val();
-        let lastName = $("#registerLastName").val();
-        let gender = $("input[name='radioGender']:checked").val();
-        let day = $("#registerDay").val();
-        if (day < 10) {
-            day = "0" + day;
-        }
-        let month;
-        for (let i in months) {
-            if (months[i] == $("#registerMonth").val()) {
-                month = parseInt(i) + 1;
-                if (month < 10) {
-                    month = "0" + month;
-                }
-                break;
-            }
-        }
-        let date = $("#registerYear").val() + "-" + month + "-" + day;
-        let birthDate = new Date(date);
-        let id = sessionStorage.getItem("userId");
-        $.ajax("/api/users/", {
-            method: 'PUT',
-            data: {'id' : id, 'username': username, 'password': password, 'name': name, 'lastName': lastName, 'gender': gender, 'email': email, 'birthDate': birthDate.toISOString() },
-            success: function (result) {
-                alert(result);
-                $("#showEditTable").trigger('click');
-            }
-        }).fail(function (data) {
-            alert(data.responseJSON.Message);
-        });
-    });
-
-    InitiateYearMonthDay();
-
+    
     $("#registerYear").change(function () {
+        // prikazi combo box za mesec
         $("#fontMonth").html("Mesec ");
         $("#registerMonth").show();
-        let year = $("#registerYear").val();
-        let month = $("#registerMonth").val();
-        GenerateOptionsForDay(year, month);
-    });
-
-    $("#registerMonth").change(function () {
+        // prikazi combo box za dan
         $("#fontDay").html("Dan ");
         $("#registerDay").show();
-        isDateValid = true;
+        // ukloni poruku za validaciju
+        isDateValid = true; // uvek se validno generisu vrednosti u combo box, pa je dovoljno da je dan prikazan da datum bude validan
         $("#invalidDate").html("");
         let year = $("#registerYear").val();
         let month = $("#registerMonth").val();
         GenerateOptionsForDay(year, month);
     });
 
-    function InitiateYearMonthDay() {
-        $("#registerMonth").hide();
-        $("#registerDay").hide();
-        GenerateOptionsForMonth();
-        GenerateOptionsForYear();
-    }
+    $("#registerMonth").change(function () {
+        let year = $("#registerYear").val();
+        let month = $("#registerMonth").val();
+        GenerateOptionsForDay(year, month);
+    });
 
-
-    function GenerateOptionsForYear() {
-        for (let i = 2022; i > 1920; i--) {
-            $("#registerYear").append('<option>' + i + '</option>');
-        }
-    }
-
-    function GenerateOptionsForMonth() {
-        for (let i in months) {
-            $("#registerMonth").append('<option>' + months[i] + '</option>');
-        }
-    }
 
     function GenerateOptionsForDay(year, month) {
         $("#registerDay").empty();
@@ -324,70 +323,89 @@
         return false;
     }
 
-    function EmptyRegisterFields() {
-        $("#registerUsername").val("");
-        $("#registerUsername").css("border", "1px solid black");
-        $("#invalidUsername").html("");
-
-        $("#registerPassword").val("");
-        $("#registerPassword").css("border", "1px solid black");
-        $("#invalidPassword").html("");
-
-        $("#registerConfirmPassword").val("");
-        $("#registerConfirmPassword").css("border", "1px solid black");
-        $("#invalidConfirmPassword").html("");
-
-        $("#registerEmail").val("");
-        $("#registerEmail").css("border", "1px solid black");
-        $("#invalidEmail").html("");
-
-        $("#registerName").val("");
-        $("#registerName").css("border", "1px solid black");
-        $("#invalidName").html("");
-
-        $("#registerLastName").val("");
-        $("#registerLastName").css("border", "1px solid black");
-        $("#invalidLastName").html("");
-
-        $("#registerYear").val("2022");
-        $("#registerMonth").val("Januar");
-        $("#registerMonth").hide();
-        $("#registerDay").hide();
-        $("#fontDay").html("");
-        $("#fontMonth").html("");
-        $("#invalidDate").html("");
-        $("input[name='radioGender'][value='Muski']").prop("checked", true);
-        isEmailValid = false;
-        isUsernameValid = false;
-        isPasswordValid = false;
-        isConfirmPasswordValid = false;
-        isNameValid = false;
-        isLastNameValid = false;
-        isDateValid = false;
-    }
-
-    function GenerateProfileFields() {
-        id = sessionStorage.getItem("userId");
-        $.get('/api/users', { 'id': id }, function (result) {
-            $("#registerUsername").val(result.Username);
-            $("#registerPassword").val(result.Password);
-            $("#registerConfirmPassword").val(result.Password);
-            $("#registerEmail").val(result.Email);
-            $("input[name='radioGender'][value=" + result.Gender + "]").prop("checked", true);
-            $("#registerName").val(result.Name);
-            $("#registerLastName").val(result.LastName);
-            //1998-12-18
-            let year = result.BirthDate.slice(0, 4);
-            let month = result.BirthDate.slice(5, 7);
-            let day = result.BirthDate.slice(8, 10);
-            if (day < 10) {
-                day = day.slice(1, 2);
+    // event handler kada se klikne na dugme Registruj se
+    $("#submitButton").click(function () {
+        // ako neko polje nije validno ne treba nista da se radi
+        // u slucaju da je polje prazno kad klikne ovde, hocemo da se zacrveni, pa zato radimo trigger focusout za svako polje
+        if (!isUsernameValid || !isPasswordValid || !isConfirmPasswordValid || !isEmailValid || !isNameValid || !isLastNameValid || !isDateValid) {
+            $("#registerUsername").trigger('focusout');
+            $("#registerPassword").trigger('focusout');
+            $("#registerConfirmPassword").trigger('focusout');
+            $("#registerEmail").trigger('focusout');
+            $("#registerName").trigger('focusout');
+            $("#registerLastName").trigger('focusout');
+            if (!isDateValid) {
+                $("#invalidDate").html("Morate uneti datum rodjenja");
+                $("#invalidDate").css("color", "red");
             }
-            $("#registerYear").val(year);
-            $("#registerMonth").val(months[parseInt(month) - 1]);
-            $("#registerYear").trigger('change');
-            $("#registerMonth").trigger('change');
-            $("#registerDay").val(day);
+            return;
+        }
+        let username = $("#registerUsername").val();
+        let password = $("#registerPassword").val();
+        let email = $("#registerEmail").val();
+        let name = $("#registerName").val();
+        let lastName = $("#registerLastName").val();
+        let gender = $("input[name='radioGender']:checked").val();
+        let day = $("#registerDay").val();
+        let month = $("#registerMonth").val();
+        let year = $("#registerYear").val();
+        let birthDate = GetBirthDate(year, month, day);
+        $.post('/api/users', { 'username': username, 'password': password, 'name': name, 'lastName': lastName, 'gender': gender, 'email': email, 'birthDate': birthDate.toISOString() },
+            function (result) {
+                // result.responeJSON.Message je undefined ovde, ali dole moze
+                // samo result je string koji posaljemo u Ok("text");
+                alert(result);
+                // ako se uspesno registrujemo, hocemo da sakrijemo tabelu
+                $("#showRegisterTableButton").trigger('click');
+            }
+        ).fail(function (data) {
+            alert(data.responseJSON.Message);
         });
+    });
+
+    $("#editButton").click(function () {
+        // ako bar jedno polje nije validno ne radi nista
+        if (!isUsernameValid || !isPasswordValid || !isConfirmPasswordValid || !isEmailValid || !isNameValid || !isLastNameValid || !isDateValid) {
+            return;
+        }
+        let username = $("#registerUsername").val();
+        let password = $("#registerPassword").val();
+        let email = $("#registerEmail").val();
+        let name = $("#registerName").val();
+        let lastName = $("#registerLastName").val();
+        let gender = $("input[name='radioGender']:checked").val();
+        let day = $("#registerDay").val();
+        let month = $("#registerMonth").val();
+        let year = $("#registerYear").val();
+        let birthDate = GetBirthDate(year, month, day);
+        let id = sessionStorage.getItem("userId");
+        $.ajax("/api/users/", {
+            method: 'PUT',
+            data: {'id' : id, 'username': username, 'password': password, 'name': name, 'lastName': lastName, 'gender': gender, 'email': email, 'birthDate': birthDate.toISOString() },
+            success: function (result) {
+                alert(result);
+                $("#showEditTable").trigger('click');
+            }
+        }).fail(function (data) {
+            alert(data.responseJSON.Message);
+        });
+    });
+
+    function GetBirthDate(year, month, day){
+        if (day < 10) {
+            day = "0" + day;
+        }
+        for (let i in months) {
+            if (months[i] == month) {
+                month = parseInt(i) + 1;
+                if (month < 10) {
+                    month = "0" + month;
+                }
+                break;
+            }
+        }
+        let date = year + "-" + month + "-" + day;
+        return new Date(date);
     }
+    
 })

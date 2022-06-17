@@ -2,7 +2,7 @@
     var isLoginUsernameValid = false;
     var isLoginPasswordValid = false;
 
-
+    // event handler za kad se klikne na uloguj se
     $("#showLoginTableButton").click(function () {
         if ($("#showLoginTableButton").text() == "Sakrij") {
             $("#loginTable").hide();
@@ -13,7 +13,8 @@
         EmptyLoginFields();
         $("#showLoginTableButton").text("Sakrij");
     });
-    
+
+    // validacije za username i password
     $("#loginUsername").focusout(function () {
         let username = $("#loginUsername").val();
         let usernameReg = /^[\w-\.]{3,16}$/;
@@ -44,6 +45,7 @@
         $("#invalidLoginPassword").html("");
     });
 
+    // event handler za login
     $("#loginButton").click(function () {
         if (!isLoginPasswordValid || !isLoginUsernameValid) {
             $("#loginUsername").trigger('focusout');
@@ -57,32 +59,28 @@
                 alert("Uspesno ste se prijavili");
                 let userId = GetCookie("session-id");
                 sessionStorage.setItem("userId", userId);
-                ShowSessionContent();
-                // uradi samo location.reload() ako se puno zakomplikuje ova funkcija
-                //let user = JSON.parse(sessionStorage.getItem("user"));
-                //alert(user.LastName);
+                ShowSessionContent(); // uradi samo location.reload() ako se puno zakomplikuje ova funkcija
             }
         ).fail(function (data) {
             alert(data.responseText);
         });
     });
 
+    // even handler za logout
     $("#logoutButton").click(function () {
         $.get('/api/users/', {'logout' : "yes"},
             function (result) {
                 alert(result);
                 let userId = GetCookie("session-id");
                 sessionStorage.setItem("userId", userId);
-                ShowGuestContent();
-                // uradi samo location.reload() ako se puno zakomplikuje ova funkcija
-                //let user = JSON.parse(sessionStorage.getItem("user"));
-                //alert(user.LastName);
+                ShowGuestContent(); // uradi samo location.reload() ako se puno zakomplikuje ova funkcija
             }
         ).fail(function (data) {
             alert(data.responseText);
         });
     });
 
+    // koristi se da izvuce session-id iz cookie, session id je id ulogovanog korisnika
     function GetCookie(cname) {
         var name = cname + "=";
         var ca = document.cookie.split(';');
@@ -95,28 +93,48 @@
     } 
 
     function ShowSessionContent() {
+        // korisnik je ulogovan
+        // sakrij login, prikazi logout
         $("#logoutButton").show();
+        $("#loginTable").hide();
+
+        // sakrij registruj koriisnika, prikazi izmeni profil
         $("#showEditTable").show();
+        $("#showRegisterTableButton").hide();
+
+        // sakrij submit za registraciju, prikazi submit za izmenu
         $("#editButton").show();
         $("#submitButton").hide();
-        $("#showRegisterTableButton").hide();
+
+        // sakrij forme za registraciju i login
         $("#showLoginTableButton").hide();
         $("#registerTable").hide();
-        $("#loginTable").hide();
+
+        // tekst dugmica koji se menja(x -> sakrij) postavi na inicijalnu vrednost
         $("#showRegisterTableButton").text("Registracija novog korisnika");
         $("#showLoginTableButton").text("Prijava korisnika");
         $("#showEditTable").text("Izmeni profil");
     }
 
     function ShowGuestContent() {
+        // korisnik nije ulogovan
+        // prikazi login, sakrij logout
         $("#logoutButton").hide();
+        $("#showLoginTableButton").show();
+
+        // prikazi registruj korisnika, sakrij izmeni profil
         $("#showEditTable").hide();
+        $("#showRegisterTableButton").show();
+
+        // prikazi submit za registraciju, sakrij submit za izmenu
         $("#editButton").hide();
         $("#submitButton").show();
-        $("#showRegisterTableButton").show();
-        $("#showLoginTableButton").show();
+
+        // sakrij forme za registraciju i login
         $("#registerTable").hide();
         $("#loginTable").hide();
+
+        // tekst dugmica koji se menja(x -> sakrij) postavi na inicijalnu vrednost
         $("#showRegisterTableButton").text("Registracija novog korisnika");
         $("#showLoginTableButton").text("Prijava korisnika");
         $("#showEditTable").text("Izmeni profil");

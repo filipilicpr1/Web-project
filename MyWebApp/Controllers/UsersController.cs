@@ -101,7 +101,9 @@ namespace MyWebApp.Controllers
         {
             string sessionId = u == null ? "" : u.Id.ToString();
             var cookie = new CookieHeaderValue("session-id", sessionId);
-            cookie.Expires = DateTimeOffset.Now.AddDays(1);
+            // ako cookie ima expire date zadat, onda se ne brise kad se zatvori browser
+            // ako nema zadat, onda se brise
+            //cookie.Expires = DateTimeOffset.Now.AddDays(1); 
             cookie.Domain = Request.RequestUri.Host;
             cookie.Path = "/";
             return cookie;

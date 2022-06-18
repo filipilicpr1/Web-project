@@ -15,6 +15,8 @@ namespace MyWebApp.Controllers
             return FitnessCenters.FitnessCentersList;
         }
 
+        
+        // pretragu radi tako da ime fitnes centra sadrzi ovo ime, isto i za adresu
         public List<FitnessCenter> Get(string name, string address, int minYear, int maxYear)
         {
             bool searchByName = !String.Equals(name, "noName");
@@ -45,7 +47,7 @@ namespace MyWebApp.Controllers
         {
             bool searchByName = !String.Equals(name, "noName");
             List<FitnessCenter> retVal = new List<FitnessCenter>();
-            var temp = FitnessCenters.FindByAddress(address);
+            var temp = FitnessCenters.SearchAllByAddress(address);
             foreach(var fc in temp)
             {
                 if(fc.YearCreated >= minYear && fc.YearCreated <= maxYear)
@@ -61,7 +63,7 @@ namespace MyWebApp.Controllers
             retVal = new List<FitnessCenter>();
             foreach(var fc in temp)
             {
-                if (String.Equals(fc.Name, name))
+                if (fc.Name.ToLower().Contains(name.ToLower()))
                 {
                     retVal.Add(fc);
                 }
@@ -72,7 +74,7 @@ namespace MyWebApp.Controllers
         private List<FitnessCenter> SearchByName(string name, int minYear, int maxYear)
         {
             List<FitnessCenter> retVal = new List<FitnessCenter>();
-            var temp = FitnessCenters.FindByName(name);
+            var temp = FitnessCenters.SearchAllByName(name);
             foreach (var item in temp)
             {
                 if (item.YearCreated >= minYear && item.YearCreated <= maxYear)

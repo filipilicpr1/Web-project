@@ -29,9 +29,19 @@ namespace MyWebApp.Models
             return FitnessCentersList.FindAll(item => String.Equals(item.Name, name));
         }
 
+        public static List<FitnessCenter> SearchAllByName(string name)
+        {
+            return FitnessCentersList.FindAll(item => item.Name.ToLower().Contains(name.ToLower()));
+        }
+
         public static List<FitnessCenter> FindByAddress(string address)
         {
-            return FitnessCentersList.FindAll(item => String.Equals(item.Address, address));
+            return FitnessCentersList.FindAll(item => String.Equals(item.Address, address.ToLower()));
+        }
+
+        public static List<FitnessCenter> SearchAllByAddress(string address)
+        {
+            return FitnessCentersList.FindAll(item => item.Address.ToLower().Contains(address));
         }
 
         public static void LoadInitialFitnessCenters()

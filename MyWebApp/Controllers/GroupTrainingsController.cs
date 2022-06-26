@@ -28,6 +28,7 @@ namespace MyWebApp.Controllers
         [AllowAnonymous]
         public IHttpActionResult ApplyForTraining(GroupTraining groupTraining)
         {
+            GroupTrainings.UpdateGroupTrainings();
             string sessionId = "";
             CookieHeaderValue cookieRecv = Request.Headers.GetCookies("session-id").FirstOrDefault();
             if (cookieRecv != null)
@@ -97,11 +98,16 @@ namespace MyWebApp.Controllers
         [AllowAnonymous]
         public List<GroupTraining> GetVisitedTrainings()
         {
+            GroupTrainings.UpdateGroupTrainings();
             // provera da li je korisnik ulogovan
             // ako nije vrati null, ako jeste vrati tog korisnika
             CookieHeaderValue cookieRecv = Request.Headers.GetCookies("session-id").FirstOrDefault();
-            User u = ValidateUser(cookieRecv);
+            User u = GetLoggedInUser(cookieRecv);
             if(u == null)
+            {
+                return null;
+            }
+            if (u.UserType != EUserType.POSETILAC)
             {
                 return null;
             }
@@ -113,16 +119,60 @@ namespace MyWebApp.Controllers
             // provera da li je korisnik ulogovan
             // ako nije vrati null, ako jeste vrati tog korisnika
             CookieHeaderValue cookieRecv = Request.Headers.GetCookies("session-id").FirstOrDefault();
-            User u = ValidateUser(cookieRecv);
+            User u = GetLoggedInUser(cookieRecv);
             if (u == null)
             {
                 return null;
             }
-            List<GroupTraining> retVal = SearchVisitedTrainings(name, trainingType, fitnessCenter, u);
-            return retVal;
+            if (u.UserType != EUserType.POSETILAC)
+            {
+                return null;
+            }
+            return SearchVisitedTrainings(name, trainingType, fitnessCenter, u);
         }
 
-        public User ValidateUser(CookieHeaderValue cookieRecv)
+
+        [Route("api/grouptrainings/completedtrainings")]
+        [HttpGet]
+        [AllowAnonymous]
+        public List<GroupTraining> GetCompletedTrainings()
+        {
+            GroupTrainings.UpdateGroupTrainings();
+            // provera da li je korisnik ulogovan
+            // ako nije vrati null, ako jeste vrati tog korisnika
+            CookieHeaderValue cookieRecv = Request.Headers.GetCookies("session-id").FirstOrDefault();
+            User u = GetLoggedInUser(cookieRecv);
+            if (u == null)
+            {
+                return null;
+            }
+            if (u.UserType != EUserType.TRENER)
+            {
+                return null;
+            }
+            return GroupTrainings.FindCompletedTrainingsByTrainer(u);
+        }
+
+        [Route("api/grouptrainings/trainersearch")]
+        [HttpGet]
+        [AllowAnonymous]
+        public List<GroupTraining> GetTrainerSearch([FromUri]GroupTrainingSearchDTO groupTrainingSearchDTO)
+        {
+            GroupTrainings.UpdateGroupTrainings();
+            CookieHeaderValue cookieRecv = Request.Headers.GetCookies("session-id").FirstOrDefault();
+            User u = GetLoggedInUser(cookieRecv);
+            if (u == null)
+            {
+                return null;
+            }
+            if (u.UserType != EUserType.TRENER)
+            {
+                return null;
+            }
+            return SearchCompletedTrainings(groupTrainingSearchDTO.Name, groupTrainingSearchDTO.TrainingType, groupTrainingSearchDTO.MinDate, groupTrainingSearchDTO.MaxDate,u);
+        }
+
+        public User GetLoggedInUser(CookieHeaderValue cookieRecv)
         {
             string sessionId = "";
             if (cookieRecv == null)
@@ -134,13 +184,7 @@ namespace MyWebApp.Controllers
             {
                 return null;
             }
-            User u = Users.FindById(int.Parse(sessionId));
-            // ako jeste ulogovan, provera da li je posetilac
-            if (u.UserType != EUserType.POSETILAC)
-            {
-                return null;
-            }
-            return u;
+            return Users.FindById(int.Parse(sessionId));
         }
 
         private List<GroupTraining> SearchVisitedTrainings(string name, string trainingType, string fitnessCenter, User u)
@@ -149,33 +193,35 @@ namespace MyWebApp.Controllers
             bool searchByType = !String.Equals(trainingType, "noType");
             bool searchByFitnessCenter = !String.Equals(fitnessCenter, "noFitnessCenter");
             List<GroupTraining> retVal = GroupTrainings.FindVisitedGroupTrainings(u);
-
             if (searchByName)
             {
                 retVal = SearchByName(retVal, name);
-                if (searchByType)
-                {
-                    retVal = SearchByType(retVal, trainingType);
-                }
-                if (searchByFitnessCenter)
-                {
-                    retVal = SearchByFitnessCenter(retVal, fitnessCenter);
-                }
-                return retVal;
-            } else if (searchByType)
+            }
+            if (searchByType)
             {
                 retVal = SearchByType(retVal, trainingType);
-                if (searchByFitnessCenter)
-                {
-                    retVal = SearchByFitnessCenter(retVal, fitnessCenter);
-                }
-                return retVal;
-            } else if (searchByFitnessCenter)
+            }
+            if (searchByFitnessCenter)
             {
                 retVal = SearchByFitnessCenter(retVal, fitnessCenter);
-                return retVal;
             }
+            return retVal;
+        }
 
+        private List<GroupTraining> SearchCompletedTrainings(string name,string trainingType, DateTime minDate, DateTime maxDate, User u)
+        {
+            bool searchByName = !String.Equals(name, "noName");
+            bool searchByType = !String.Equals(trainingType, "noType");
+            List<GroupTraining> retVal = GroupTrainings.FindCompletedTrainingsByTrainer(u);
+            if (searchByName)
+            {
+                retVal = SearchByName(retVal, name);
+            }
+            if (searchByType)
+            {
+                retVal = SearchByType(retVal, trainingType);
+            }
+            retVal = SearchByDate(retVal, minDate, maxDate);
             return retVal;
         }
 
@@ -185,7 +231,7 @@ namespace MyWebApp.Controllers
             foreach(var item in list)
             {
                 if(item.Name.ToLower().Contains(name.ToLower()))
-                    {
+                {
                     retVal.Add(item);
                 }
             }
@@ -216,6 +262,86 @@ namespace MyWebApp.Controllers
                 }
             }
             return retVal;
+        }
+
+        private List<GroupTraining> SearchByDate(List<GroupTraining> list, DateTime minDate, DateTime maxDate)
+        {
+            List<GroupTraining> retVal = new List<GroupTraining>();
+            foreach(var item in list)
+            {
+                if(CompareDates(minDate,item.DateOfTraining) && CompareDates(item.DateOfTraining, maxDate))
+                {
+                    retVal.Add(item);
+                }
+            }
+            return retVal;
+        }
+
+        // vraca true ake je date1 pre date2
+        private bool CompareDates(DateTime date1, DateTime date2)
+        {
+            var day1 = date1.Day;
+            var month1 = date1.Month;
+            var year1 = date1.Year;
+            var hour1 = date1.Hour;
+            var minute1 = date1.Minute;
+
+            var day2 = date2.Day;
+            var month2 = date2.Month;
+            var year2 = date2.Year;
+            var hour2 = date2.Hour;
+            var minute2 = date2.Minute;
+            
+            if (year1 < year2)
+            {
+                return true;
+            }
+
+            if (year1 > year2)
+            {
+                return false;
+            }
+
+            if (month1 < month2)
+            {
+                return true;
+            }
+
+            if (month1 > month2)
+            {
+                return false;
+            }
+
+            if (day1 < day2)
+            {
+                return true;
+            }
+
+            if (day1 > day2)
+            {
+                return false;
+            }
+
+            if (hour1 < hour2)
+            {
+                return true;
+            }
+
+            if (hour1 > hour2)
+            {
+                return false;
+            }
+
+            if (minute1 < minute2)
+            {
+                return true;
+            }
+
+            if (minute1 > minute2)
+            {
+                return false;
+            }
+            return true;    // ako su isti datumi vrati true
         }
     }
 }

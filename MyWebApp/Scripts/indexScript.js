@@ -9,6 +9,7 @@
     var userType = ["POSETILAC", "TRENER", "VLASNIK"];
     var user = null;
     var userIsVisitor = false;
+    var userIsTrainer = false;
     
 
 
@@ -47,11 +48,16 @@
         $.get("/api/users", { 'id': userId }, function (data, status) {
             // dobavimo usera, pa odredimo koji je tip 
             userIsVisitor = userType[data.UserType] == "POSETILAC"; // za sad se generise samo sadrzaj za posetioca
-
+            userIsTrainer = userType[data.UserType] == "TRENER";
             // u zavisnosti od tipa prikazemo odredjene linkove
             if (userIsVisitor) {
                 $("#visitedGroupTrainingsLink").show();
             }
+
+            if (userIsTrainer) {
+                $("#visitedGroupTrainingsLink").show();
+            }
+
         }).fail(function (data) {
             alert(data.responseJSON.Message);
         });
@@ -103,6 +109,13 @@
             return;
         }
         $("#registerDay").append('<option>31</option>');
+    }
+
+    function IsLeapYear(year) {
+        if ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)) {
+            return true;
+        }
+        return false;
     }
 
     // inicijalno popunjavanje tabele sa fitnes centrima pri ucitavanju stranice

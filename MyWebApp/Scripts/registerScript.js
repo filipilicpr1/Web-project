@@ -273,7 +273,6 @@
     });
     
     $("#registerYear").change(function (event) {
-        let sel = event.target;
         let year = $("#registerYear").val();
         let month = $("#registerMonth").val();
         let day = $("#registerDay").val();

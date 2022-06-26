@@ -56,6 +56,17 @@ namespace MyWebApp.Models
             return retVal;
         }
 
+        public static List<GroupTraining> FindCompletedTrainingsByTrainer(User u)
+        {
+            var list = u.TrainingGroupTrainings.FindAll(item => !item.Upcoming);
+            List<GroupTraining> retVal = new List<GroupTraining>();
+            foreach (var item in list)
+            {
+                retVal.Add(GroupTrainings.FindById(item.Id));
+            }
+            return retVal;
+        }
+
         public static void LoadInitialGroupTrainings()
         {
             GroupTrainingsList = new List<GroupTraining>();

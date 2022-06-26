@@ -1,0 +1,86 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script src="../Scripts/jquery-3.3.1.js"></script>
+    <script src="../Scripts/completedGroupTrainingsScript.js"></script>
+    <style>
+        caption {
+            font-size: 22px;
+            font-weight: bold;
+            color: darkblue;
+        }
+        input.timeInput{
+            width : 30px;
+        }
+    </style>
+</head>
+<body>
+    <div id="trainingTableDiv">
+
+    </div>
+    <div id="trainingPretraga">
+        <h3>Pretraga</h3>
+        <table>
+            <tr>
+                <td>
+                    Naziv:
+                </td>
+                <td>
+                    <input type="text" id="nazivPretraga" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    Tip treninga:
+                </td>
+                <td>
+                    <input type="text" id="tipPretraga" />
+                </td>
+            </tr>
+            <tr id="visitorSearch">
+                <td>
+                    Fitnes centar:
+                </td>
+                <td>
+                    <input type="text" id="fitnesCentarPretraga" />
+                </td>
+            </tr>
+            <tr id="trainerMinSearch">
+                <td>
+                    Od:
+                </td>
+                <td>
+                    <select id="minYear"></select>
+                    <select id="minMonth"></select>
+                    <select id="minDay"></select>
+                    <input class="timeInput" type="text" id="minHour" />
+                    :
+                    <input class="timeInput" type="text" id="minMin" />
+                </td>
+            </tr>
+            <tr id="trainerMaxSearch">
+                <td>
+                    Do:
+                </td>
+                <td>
+                    <select id="maxYear"></select>
+                    <select id="maxMonth"></select>
+                    <select id="maxDay"></select>
+                    <input class="timeInput" type="text" id="maxHour" />
+                    :
+                    <input class="timeInput" type="text" id="maxMin" />
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <button id="visitorPretragaButton">Pretrazi</button>
+                    <button id="trainerPretragaButton">Pretrazi</button>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <a href="index.html">Nazad</a>
+</body>
+</html>

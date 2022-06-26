@@ -61,13 +61,14 @@
     $("#loginTable").hide();
 
     // popunjavanje combo boxa za godinu i mesec
-    InitiateYearMonth();
+    InitiateYearMonthDay();
 
-    function InitiateYearMonth() {
-        $("#registerMonth").hide();
-        $("#registerDay").hide();
+    function InitiateYearMonthDay() {
         GenerateOptionsForMonth();
         GenerateOptionsForYear();
+        let year = $("#registerYear").val();
+        let month = $("#registerMonth").val();
+        GenerateOptionsForDay(year, month);
     }
 
     function GenerateOptionsForYear() {
@@ -82,6 +83,27 @@
         }
     }
 
+    function GenerateOptionsForDay(year, month) {
+        $("#registerDay").empty();
+        for (let i = 1; i < 29; i++) {
+            $("#registerDay").append('<option>' + i + '</option>');
+        }
+
+        if (month == "Februar" && !IsLeapYear(year)) {
+            return;
+        }
+
+        $("#registerDay").append('<option>29</option>');
+        if (month == "Februar" && IsLeapYear(year)) {
+            return;
+        }
+
+        $("#registerDay").append('<option>30</option>');
+        if (month == "April" || month == "Jun" || month == "Septembar" || month == "Novembar") {
+            return;
+        }
+        $("#registerDay").append('<option>31</option>');
+    }
 
     // inicijalno popunjavanje tabele sa fitnes centrima pri ucitavanju stranice
     $.get("/api/fitnesscenters", function (data, status) {

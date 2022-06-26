@@ -8,7 +8,6 @@
     var isConfirmPasswordValid = false;
     var isNameValid = false;
     var isLastNameValid = false;
-    var isDateValid = false;
 
     // event handler kada se klikne na registracija novog korisnika
     $("#showRegisterTableButton").click(function () {
@@ -72,11 +71,12 @@
         // dan ne mora da se menja, jer kad se izmeni mesec, onda se ponovo izgenerisu dani i postave se na pocetnu vrednost
         $("#registerYear").val("2022");
         $("#registerMonth").val("Januar");
-        $("#registerMonth").hide();
-        $("#registerDay").hide();
-        $("#fontDay").html("");
-        $("#fontMonth").html("");
-        $("#invalidDate").html("");
+        $("#registerDay").val("1");
+        //$("#registerMonth").hide();
+        //$("#registerDay").hide();
+        //$("#fontDay").html("");
+        //$("#fontMonth").html("");
+        //$("#invalidDate").html("");
         // postavlja pol na muski po default
         $("input[name='radioGender'][value='Muski']").prop("checked", true);
         // sve je na pocetku invalid
@@ -86,7 +86,7 @@
         isConfirmPasswordValid = false;
         isNameValid = false;
         isLastNameValid = false;
-        isDateValid = false;
+        //isDateValid = false;
     }
 
     function GenerateProfileFields() {
@@ -272,46 +272,38 @@
         $("#invalidConfirmPassword").html("");
     });
     
-    $("#registerYear").change(function () {
-        // prikazi combo box za mesec
-        if ($("#fontMonth").html() == "") {
-            $("#fontMonth").hide();
-        }
-        $("#fontMonth").html("Mesec ");
-        $("#fontMonth").show(2000);
-        $("#registerMonth").show(2000);
-        // ukloni poruku za validaciju
+    $("#registerYear").change(function (event) {
+        let sel = event.target;
         let year = $("#registerYear").val();
         let month = $("#registerMonth").val();
+        let day = $("#registerDay").val();
+        // ovo resetuje dan, pa proverimo da li novi select sadrzi stari dan
         GenerateOptionsForDay(year, month);
+        var exists = false;
+        $('#registerDay  option').each(function () {
+            if (this.value == day) {
+                exists = true;
+            }
+        });
+        if (exists) {
+            $("#registerDay").val(day);
+        }
     });
 
     $("#registerMonth").change(function () {
-        // prikazi combo box za dan
-        if ($("#fontDay").html() == "") {
-            $("#fontDay").hide();
-        }
-        $("#fontDay").html("Dan ");
-        $("#fontDay").show(2000);
-        $("#registerDay").show(2000);
-        isDateValid = true; // uvek se validno generisu vrednosti u combo box, pa je dovoljno da je dan prikazan da datum bude validan
-        $("#invalidDate").html("");
         let year = $("#registerYear").val();
         let month = $("#registerMonth").val();
+        let day = $("#registerDay").val();
+        // ovo resetuje dan, pa proverimo da li novi select sadrzi stari dan
         GenerateOptionsForDay(year, month);
-    });
-
-    $("#registerYear").click(function () {
-        let year = $("#registerYear").val();
-        if (year == "2022") {
-            $("#registerYear").trigger('change');
-        }
-    });
-
-    $("#registerMonth").click(function () {
-        let month = $("#registerMonth").val();
-        if (month == "Januar") {
-            $("#registerMonth").trigger('change');
+        var exists = false;
+        $('#registerDay  option').each(function () {
+            if (this.value == day) {
+                exists = true;
+            }
+        });
+        if (exists) {
+            $("#registerDay").val(day);
         }
     });
 
@@ -348,17 +340,13 @@
     $("#submitButton").click(function () {
         // ako neko polje nije validno ne treba nista da se radi
         // u slucaju da je polje prazno kad klikne ovde, hocemo da se zacrveni, pa zato radimo trigger focusout za svako polje
-        if (!isUsernameValid || !isPasswordValid || !isConfirmPasswordValid || !isEmailValid || !isNameValid || !isLastNameValid || !isDateValid) {
+        if (!isUsernameValid || !isPasswordValid || !isConfirmPasswordValid || !isEmailValid || !isNameValid || !isLastNameValid) {
             $("#registerUsername").trigger('focusout');
             $("#registerPassword").trigger('focusout');
             $("#registerConfirmPassword").trigger('focusout');
             $("#registerEmail").trigger('focusout');
             $("#registerName").trigger('focusout');
             $("#registerLastName").trigger('focusout');
-            if (!isDateValid) {
-                $("#invalidDate").html("Morate uneti datum rodjenja");
-                $("#invalidDate").css("color", "red");
-            }
             return;
         }
         let username = $("#registerUsername").val();

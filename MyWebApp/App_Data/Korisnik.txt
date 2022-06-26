@@ -11,3 +11,4 @@
 1802131575;ana;anagod;Anatham;Pha;Muski;ana@god.com;01/04/2002;POSETILAC
 1177248523;marijatereza;nempojma;Marija;Tereza;Zenski;men@jam.com;01/01/2022;POSETILAC
 2117130570;zhang;xena;John;Cena;Muski;xi@ji.pi;01/04/1980;POSETILAC
+1448330741;nub;bot22;Bot;Avav;Drugo;bot@bot.bot;01/06/2021;POSETILAC

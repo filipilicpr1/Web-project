@@ -18,9 +18,9 @@ namespace MyWebApp.Controllers
 
         public List<GroupTraining> GetByFitnessCenterId(int fitnessId)
         {
-            // za sad vraca sve, verovatno treba logika da vraca samo buduce
-            // moguce da postoji polje koje ce da kaze da li je trening u buducnosti
-            return GroupTrainings.FindAllByFitnessCenterId(fitnessId);
+            // prvo update za svaki grupni trening da li je u buducnosti
+            GroupTrainings.UpdateGroupTrainings();
+            return GroupTrainings.FindAllUpcomingByFitnessCenterId(fitnessId);
         }
 
         [Route("api/grouptrainings/apply")]
@@ -82,8 +82,140 @@ namespace MyWebApp.Controllers
                 errorMessage = "Full capacity reached for this training";
                 return false;
             }
+
+            if (!gt.Upcoming)
+            {
+                errorMessage = "That training has already happened";
+                return false;
+            }
             return true;
         }
-        
+
+
+        [Route("api/grouptrainings/visitedtrainings")]
+        [HttpGet]
+        [AllowAnonymous]
+        public List<GroupTraining> GetVisitedTrainings()
+        {
+            // provera da li je korisnik ulogovan
+            // ako nije vrati null, ako jeste vrati tog korisnika
+            CookieHeaderValue cookieRecv = Request.Headers.GetCookies("session-id").FirstOrDefault();
+            User u = ValidateUser(cookieRecv);
+            if(u == null)
+            {
+                return null;
+            }
+            return GroupTrainings.FindVisitedGroupTrainings(u);
+        }
+
+        public List<GroupTraining> Get(string fitnessCenter, string name, string trainingType)
+        {
+            // provera da li je korisnik ulogovan
+            // ako nije vrati null, ako jeste vrati tog korisnika
+            CookieHeaderValue cookieRecv = Request.Headers.GetCookies("session-id").FirstOrDefault();
+            User u = ValidateUser(cookieRecv);
+            if (u == null)
+            {
+                return null;
+            }
+            List<GroupTraining> retVal = SearchVisitedTrainings(name, trainingType, fitnessCenter, u);
+            return retVal;
+        }
+
+        public User ValidateUser(CookieHeaderValue cookieRecv)
+        {
+            string sessionId = "";
+            if (cookieRecv == null)
+            {
+                return null;
+            }
+            sessionId = cookieRecv["session-id"].Value;
+            if (sessionId == "")
+            {
+                return null;
+            }
+            User u = Users.FindById(int.Parse(sessionId));
+            // ako jeste ulogovan, provera da li je posetilac
+            if (u.UserType != EUserType.POSETILAC)
+            {
+                return null;
+            }
+            return u;
+        }
+
+        private List<GroupTraining> SearchVisitedTrainings(string name, string trainingType, string fitnessCenter, User u)
+        {
+            bool searchByName = !String.Equals(name, "noName");
+            bool searchByType = !String.Equals(trainingType, "noType");
+            bool searchByFitnessCenter = !String.Equals(fitnessCenter, "noFitnessCenter");
+            List<GroupTraining> retVal = GroupTrainings.FindVisitedGroupTrainings(u);
+
+            if (searchByName)
+            {
+                retVal = SearchByName(retVal, name);
+                if (searchByType)
+                {
+                    retVal = SearchByType(retVal, trainingType);
+                }
+                if (searchByFitnessCenter)
+                {
+                    retVal = SearchByFitnessCenter(retVal, fitnessCenter);
+                }
+                return retVal;
+            } else if (searchByType)
+            {
+                retVal = SearchByType(retVal, trainingType);
+                if (searchByFitnessCenter)
+                {
+                    retVal = SearchByFitnessCenter(retVal, fitnessCenter);
+                }
+                return retVal;
+            } else if (searchByFitnessCenter)
+            {
+                retVal = SearchByFitnessCenter(retVal, fitnessCenter);
+                return retVal;
+            }
+
+            return retVal;
+        }
+
+        private List<GroupTraining> SearchByName(List<GroupTraining> list, string name)
+        {
+            List<GroupTraining> retVal = new List<GroupTraining>();
+            foreach(var item in list)
+            {
+                if(item.Name.ToLower().Contains(name.ToLower()))
+                    {
+                    retVal.Add(item);
+                }
+            }
+            return retVal;
+        }
+
+        private List<GroupTraining> SearchByType(List<GroupTraining> list, string trainingType)
+        {
+            List<GroupTraining> retVal = new List<GroupTraining>();
+            foreach (var item in list)
+            {
+                if (item.TrainingType.ToLower().Contains(trainingType.ToLower()))
+                {
+                    retVal.Add(item);
+                }
+            }
+            return retVal;
+        }
+
+        private List<GroupTraining> SearchByFitnessCenter(List<GroupTraining> list, string fitnessCenter)
+        {
+            List<GroupTraining> retVal = new List<GroupTraining>();
+            foreach (var item in list)
+            {
+                if (item.FitnessCenterLocation.Name.ToLower().Contains(fitnessCenter.ToLower()))
+                {
+                    retVal.Add(item);
+                }
+            }
+            return retVal;
+        }
     }
 }

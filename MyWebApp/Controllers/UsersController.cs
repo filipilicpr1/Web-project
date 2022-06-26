@@ -27,6 +27,7 @@ namespace MyWebApp.Controllers
                 return BadRequest(errorMessage);
             }
             user.UserType = EUserType.POSETILAC;
+            user.VisitingGroupTrainings = new List<GroupTraining>();
             Users.AddUser(user);
             return Ok("Korisnik uspesno registrovan");
         }
@@ -42,6 +43,64 @@ namespace MyWebApp.Controllers
             }
             Users.UpdateUser(user);
             return Ok("Korisnik uspesno izmenjen");
+        }
+
+        private bool ValidateUser(User user, out string errorMessage, bool update)
+        {
+            errorMessage = "";
+
+            if (user == null)
+            {
+                errorMessage = "Greska prilikom prijema podataka";
+                return false;
+            }
+
+            if (Users.FindByUsername(user.Username) != null && !update)
+            {
+                errorMessage = "Korisnik sa tim korisnickim imenom vec postoji";
+                return false;
+            }
+
+            var usernameReg = @"^[\w -\.]{3,16}$";
+
+            if (!Regex.IsMatch(user.Username, usernameReg, RegexOptions.IgnoreCase))
+            {
+                errorMessage = "Nevalidno korisnicko ime";
+                return false;
+            }
+
+            var passwordReg = @"^[\w -\.]{3,16}$";
+
+            if (!Regex.IsMatch(user.Password, passwordReg))
+            {
+                errorMessage = "Nevalidna lozinka";
+                return false;
+            }
+
+            var emailReg = @"^([\w -\.]+@([\w -]+\.)+[\w-]{2,4})?$";
+
+            if (!Regex.IsMatch(user.Email, emailReg))
+            {
+                errorMessage = "Nevalidan email";
+                return false;
+            }
+
+            var nameReg = @"^[a-zA-Z]{3,16}$";
+
+            if (!Regex.IsMatch(user.Name, nameReg))
+            {
+                errorMessage = "Nevalidno ime";
+                return false;
+            }
+
+            var lastNameReg = @"^[a-zA-Z]{3,20}$";
+
+            if (!Regex.IsMatch(user.LastName, lastNameReg))
+            {
+                errorMessage = "Nevalidno prezime";
+                return false;
+            }
+            return true;
         }
 
         [Route("api/users/login")]
@@ -114,64 +173,6 @@ namespace MyWebApp.Controllers
             cookie.Domain = Request.RequestUri.Host;
             cookie.Path = "/";
             return cookie;
-        }
-
-        private bool ValidateUser(User user,out string errorMessage, bool update)
-        {
-            errorMessage = "";
-
-            if (user == null)
-            {
-                errorMessage = "Greska prilikom prijema podataka";
-                return false;
-            }
-
-            if (Users.FindByUsername(user.Username) != null && !update)
-            {
-                errorMessage = "Korisnik sa tim korisnickim imenom vec postoji";
-                return false;
-            }
-
-            var usernameReg = @"^[\w -\.]{3,16}$";
-
-            if (!Regex.IsMatch(user.Username, usernameReg, RegexOptions.IgnoreCase))
-            {
-                errorMessage = "Nevalidno korisnicko ime";
-                return false;
-            }
-
-            var passwordReg = @"^[\w -\.]{3,16}$";
-
-            if (!Regex.IsMatch(user.Password, passwordReg))
-            {
-                errorMessage = "Nevalidna lozinka";
-                return false;
-            }
-
-            var emailReg = @"^([\w -\.]+@([\w -]+\.)+[\w-]{2,4})?$";
-
-            if (!Regex.IsMatch(user.Email, emailReg))
-            {
-                errorMessage = "Nevalidan email";
-                return false;
-            }
-
-            var nameReg = @"^[a-zA-Z]{3,16}$";
-
-            if (!Regex.IsMatch(user.Name, nameReg))
-            {
-                errorMessage = "Nevalidno ime";
-                return false;
-            }
-
-            var lastNameReg = @"^[a-zA-Z]{3,20}$";
-
-            if (!Regex.IsMatch(user.LastName, lastNameReg))
-            {
-                errorMessage = "Nevalidno prezime";
-                return false;
-            }
-            return true;
         }
     }
 }

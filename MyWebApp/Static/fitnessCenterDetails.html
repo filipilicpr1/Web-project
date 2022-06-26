@@ -26,6 +26,17 @@
             font-weight : normal;
             color : green;
         }
+        select{
+            width : 100%;
+        }
+        textarea{
+            resize : none;
+            width : 250px;
+            height : 75px;
+        }
+        td.commentTable{
+            vertical-align : top;
+        }
     </style>
 </head>
 <body>
@@ -50,7 +61,33 @@
     <div id="fitnessCenterCommentsTable">
 
     </div>
-
+    <div id="commentDiv">
+        <h4>Ostavite komentar</h4>
+        <table>
+            <tr>
+                <td>Komentar:</td>
+                <td>Ocena:</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>
+                    <textarea id="commentText"></textarea>
+                </td>
+                <td class="commentTable">
+                    <select id="commentRating">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                    </select>
+                </td>
+                <td class="commentTable">
+                    <button id="sendCommentButton">Posalji</button>
+                </td>
+            </tr>
+        </table>
+    </div>
     <a href="index.html">Nazad</a>
 </body>
 </html>

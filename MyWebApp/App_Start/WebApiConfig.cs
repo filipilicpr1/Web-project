@@ -23,6 +23,12 @@ namespace MyWebApp
             );
 
             config.Routes.MapHttpRoute(
+                name: "SearchVisitedGroupTrainings",
+                routeTemplate: "api/{controller}/{fitnessCenter}/{trainingType}/{name}",
+                defaults: new { fitnessCenter = "", name = "", trainingType = "" }
+            );
+
+            config.Routes.MapHttpRoute(
                 name: "SearchFitnessCenters",
                 routeTemplate: "api/{controller}/{name}/{address}/{minYear}/{maxYear}",
                 defaults: new {name = "", address = "", minYear = 0, maxYear = 10000 }

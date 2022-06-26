@@ -12,6 +12,8 @@ namespace MyWebApp.Models
         public int Rating { get; set; }
         public FitnessCenter RelatedFitnessCenter { get; set; }
         public User Creator { get; set; }
+        public bool Visible { get; set; }
+        public bool Approved { get; set; }
 
         public Comment() { }
 
@@ -20,6 +22,8 @@ namespace MyWebApp.Models
             this.Id = c.Id;
             this.Text = c.Text;
             this.Rating = c.Rating;
+            this.Visible = c.Visible;
+            this.Approved = c.Approved;
         }
     }
 }

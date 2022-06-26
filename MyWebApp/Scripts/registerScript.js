@@ -274,12 +274,26 @@
     
     $("#registerYear").change(function () {
         // prikazi combo box za mesec
+        if ($("#fontMonth").html() == "") {
+            $("#fontMonth").hide();
+        }
         $("#fontMonth").html("Mesec ");
-        $("#registerMonth").show();
-        // prikazi combo box za dan
-        $("#fontDay").html("Dan ");
-        $("#registerDay").show();
+        $("#fontMonth").show(2000);
+        $("#registerMonth").show(2000);
         // ukloni poruku za validaciju
+        let year = $("#registerYear").val();
+        let month = $("#registerMonth").val();
+        GenerateOptionsForDay(year, month);
+    });
+
+    $("#registerMonth").change(function () {
+        // prikazi combo box za dan
+        if ($("#fontDay").html() == "") {
+            $("#fontDay").hide();
+        }
+        $("#fontDay").html("Dan ");
+        $("#fontDay").show(2000);
+        $("#registerDay").show(2000);
         isDateValid = true; // uvek se validno generisu vrednosti u combo box, pa je dovoljno da je dan prikazan da datum bude validan
         $("#invalidDate").html("");
         let year = $("#registerYear").val();
@@ -287,12 +301,19 @@
         GenerateOptionsForDay(year, month);
     });
 
-    $("#registerMonth").change(function () {
+    $("#registerYear").click(function () {
         let year = $("#registerYear").val();
-        let month = $("#registerMonth").val();
-        GenerateOptionsForDay(year, month);
+        if (year == "2022") {
+            $("#registerYear").trigger('change');
+        }
     });
 
+    $("#registerMonth").click(function () {
+        let month = $("#registerMonth").val();
+        if (month == "Januar") {
+            $("#registerMonth").trigger('change');
+        }
+    });
 
     function GenerateOptionsForDay(year, month) {
         $("#registerDay").empty();

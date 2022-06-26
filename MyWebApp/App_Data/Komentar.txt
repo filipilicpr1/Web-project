@@ -1,4 +1,10 @@
-9453;Veoma sam zadovoljan;5
-3254;Vrh je;5
-8432;Skoro pa odlicno;4
-4144;Uzas;2
+9453;Veoma sam zadovoljan;5;True;True
+3254;Vrh je;5;True;True
+8432;Skoro pa odlicno;4;True;True
+4144;Uzas;2;False;True
+2091915269;Novi komentar;3;False;True
+1904224323;Neki text;4;True;True
+1004809490;asdf;2;True;True
+875418138;a ovde;4;False;True
+516082451;Kmentar x;5;False;False
+201280009;anatham pham;2;True;True

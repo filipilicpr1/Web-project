@@ -1,6 +1,10 @@
 ﻿$(document).ready(function () {
     var isLoginUsernameValid = false;
     var isLoginPasswordValid = false;
+    var userId = sessionStorage.getItem("userId");
+    var userType = ["POSETILAC", "TRENER", "VLASNIK"];
+
+
 
     // event handler za kad se klikne na uloguj se
     $("#showLoginTableButton").click(function () {
@@ -57,7 +61,7 @@
         $.post('/api/users/login', { 'username': username, 'password': password},
             function (result) {
                 alert("Uspesno ste se prijavili");
-                let userId = GetCookie("session-id");
+                userId = GetCookie("session-id");
                 sessionStorage.setItem("userId", userId);
                 ShowSessionContent(); // uradi samo location.reload() ako se puno zakomplikuje ova funkcija
             }
@@ -71,7 +75,7 @@
         $.get('/api/users/logout',
             function (result) {
                 alert(result);
-                let userId = GetCookie("session-id");
+                let userId = GetCookie("session-id");   // na logout, cookie vrati "" za session-id
                 sessionStorage.setItem("userId", userId);
                 ShowGuestContent(); // uradi samo location.reload() ako se puno zakomplikuje ova funkcija
             }
@@ -114,6 +118,17 @@
         $("#showRegisterTableButton").text("Registracija novog korisnika");
         $("#showLoginTableButton").text("Prijava korisnika");
         $("#showEditTable").text("Izmeni profil");
+        $.get("/api/users", { 'id': userId }, function (data, status) {
+            // dobavimo usera, pa odredimo koji je tip 
+            let userIsVisitor = userType[data.UserType] == "POSETILAC"; // za sad se generise samo sadrzaj za posetioca
+
+            // u zavisnosti od tipa prikazemo odredjene linkove
+            if (userIsVisitor) {
+                $("#visitedGroupTrainingsLink").show();
+            }
+        }).fail(function (data) {
+            alert(data.responseJSON.Message);
+        });
     }
 
     function ShowGuestContent() {
@@ -138,6 +153,9 @@
         $("#showRegisterTableButton").text("Registracija novog korisnika");
         $("#showLoginTableButton").text("Prijava korisnika");
         $("#showEditTable").text("Izmeni profil");
+
+        // sakrij sve linkove
+        $("#visitedGroupTrainingsLink").hide();
     }
     
     function EmptyLoginFields() {

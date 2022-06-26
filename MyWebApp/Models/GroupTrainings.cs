@@ -26,9 +26,9 @@ namespace MyWebApp.Models
             return GroupTrainingsList.Find(item => item.Id == id);
         }
 
-        public static List<GroupTraining> FindAllByFitnessCenterId(int fitnessId)
+        public static List<GroupTraining> FindAllUpcomingByFitnessCenterId(int fitnessId)
         {
-            return GroupTrainingsList.FindAll(item => item.FitnessCenterLocation.Id == fitnessId);
+            return GroupTrainingsList.FindAll(item => (item.FitnessCenterLocation.Id == fitnessId) && item.Upcoming);
         }
 
         public static void RegisterUserForTraining(User u, GroupTraining gt)
@@ -44,6 +44,18 @@ namespace MyWebApp.Models
             SaveGroupTrainingVisitors();
         }
 
+        public static List<GroupTraining> FindVisitedGroupTrainings(User u)
+        {
+            // mora ovako jer svaki grupni trening u VisitingGRoupTraining za FitnessCenterLocation ima null
+            var list = u.VisitingGroupTrainings.FindAll(item => !item.Upcoming);
+            List<GroupTraining> retVal = new List<GroupTraining>();
+            foreach (var item in list)
+            {
+                retVal.Add(GroupTrainings.FindById(item.Id));
+            }
+            return retVal;
+        }
+
         public static void LoadInitialGroupTrainings()
         {
             GroupTrainingsList = new List<GroupTraining>();
@@ -55,6 +67,8 @@ namespace MyWebApp.Models
                 GroupTrainingsList.Add(gt);
             }
             sr.Close();
+            // za svaki trening odredi da li je u buducnosti ili u proslosti
+            UpdateGroupTrainings();
         }
 
         private static GroupTraining GetSingleGroupTraining(string line)
@@ -68,6 +82,57 @@ namespace MyWebApp.Models
             gt.DateOfTraining = DateTime.Parse(values[4]);
             gt.VisitorCapacity = int.Parse(values[5]);
             return gt;
+        }
+
+        public static void UpdateGroupTrainings()
+        {
+            foreach(var gt in GroupTrainingsList)
+            {
+                gt.Upcoming = CheckDate(gt.DateOfTraining);
+            }
+        }
+
+        private static bool CheckDate(DateTime gtDate)
+        {
+            int gtYear = gtDate.Year;
+            int gtMonth = gtDate.Month;
+            int gtDay = gtDate.Day;
+            DateTime currentDate = DateTime.Now;
+            int currYear = currentDate.Year;
+            int currMonth = currentDate.Month;
+            int currDay = currentDate.Day;
+
+            if(gtYear > currYear)
+            {
+                return true;
+            }
+
+            if(gtYear < currYear)
+            {
+                return false;
+            }
+
+            if(gtMonth > currMonth)
+            {
+                return true;
+            }
+
+            if(gtMonth < currMonth)
+            {
+                return false;
+            }
+
+            if(gtDay > currDay)
+            {
+                return true;
+            }
+
+            if(gtDay < currDay)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public static void FinishLoading()

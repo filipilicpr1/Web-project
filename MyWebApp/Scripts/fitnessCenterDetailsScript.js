@@ -4,7 +4,10 @@
     var userId = sessionStorage.getItem("userId"); 
     var user = null;
     var userIsVisitor = false;
+    var userIsOwner = false;
 
+    // sakrij polje za komentar, pa ako jeste posetilac onda ga pokazi
+    $("#commentDiv").hide();
     GetUser();
 
     // dobavljamo korisnika ako je ulogovan, jer onda generisemo odredjen sadrzaj za njega
@@ -14,8 +17,25 @@
             $.get("/api/users", { 'id': userId }, function (data, status) {
                 user = data
                 userIsVisitor = userType[user.UserType] == "POSETILAC"; // za sad se generise samo sadrzaj za posetioca
+                userIsOwner = CheckIfUserOwner(user);
+
+                if (userIsVisitor) {
+                    $("#commentDiv").show();
+                }
             });
         }
+    }
+
+    function CheckIfUserOwner(user) {
+        if (userType[user.UserType] != "VLASNIK") {
+            return false;
+        }
+        for (let fitnessCenter in user.FitnessCentersOwned) {
+            if (user.FitnessCentersOwned[fitnessCenter].Id == id) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // popunjavanje podataka o izabranom fitnes centru
@@ -38,14 +58,16 @@
         $.get("/api/grouptrainings", { 'fitnessId': id }, function (data, status) {
             // pravi tabelu sa grupnim treninzima
             // ako je ulogovan korisnik posetilac, dodaje se jos jedna kolona koja sluzi za prijavljivanje na trening
-            let tableContent = "<table border='1'><caption align='center'>Predstojeci grupni treninzi</caption><tr><th>Naziv</th><th>Vrsta treninga</th><th>Trajanje</th><th>Datum</th><th>Vreme</th><th>Kapacitet</th><th>Broj prijavljenih</th>";
+            let tableContent = "<table border='1'><caption align='center'>Predstojeci grupni treninzi</caption><tr><th>Naziv</th><th>Vrsta treninga</th><th>Trajanje</th><th>Datum</th><th>Kapacitet</th><th>Broj prijavljenih</th>";
             if (userIsVisitor) {
                 tableContent += "<th></th>";
             }
             tableContent += "</tr>";
             for (groupTraining in data) {
                 let datum = data[groupTraining].DateOfTraining.slice(8, 10) + "/" + data[groupTraining].DateOfTraining.slice(5, 7) + "/" + data[groupTraining].DateOfTraining.slice(0, 4);// 2022-10-10
-                tableContent += `<tr><td>${data[groupTraining].Name}</td><td>${data[groupTraining].TrainingType}</td><td>${data[groupTraining].Duration}</td><td>${datum}</td><td>${data[groupTraining].DateOfTraining.slice(11, 16)}</td><td>${data[groupTraining].VisitorCapacity}</td><td>${data[groupTraining].VisitorCount}</td>`;
+                let vreme = data[groupTraining].DateOfTraining.slice(11, 16);
+                let date = datum + " " + vreme;
+                tableContent += `<tr><td>${data[groupTraining].Name}</td><td>${data[groupTraining].TrainingType}</td><td>${data[groupTraining].Duration}</td><td>${date}</td><td>${data[groupTraining].VisitorCapacity}</td><td>${data[groupTraining].VisitorCount}</td>`;
                 if (userIsVisitor) {
                     // dodavanje dugmeta ili poruke u novu kolonu za svaki red
                     tableContent += GenerateApplyContent(user, data[groupTraining]);
@@ -71,17 +93,6 @@
                     alert(data.responseJSON.Message);
                 });
             });
-        });
-    }
-
-    function GenerateCommentsTable() {
-        $.get("/api/comments", { 'fitnessId': id }, function (data, status) {
-            let tableContent = "<table border='1'><caption align='center'>Komentari</caption><tr><th>Komentar</th><th>Ocena</th></tr>";
-            for (comment in data) {
-                tableContent += `<tr><td>${data[comment].Text}</td><td>${data[comment].Rating}</td></tr>`;
-            }
-            tableContent += "</table>";
-            $("#fitnessCenterCommentsTable").html(tableContent);
         });
     }
 
@@ -112,5 +123,82 @@
             }
         }
         return false;
+    }
+
+    function GenerateCommentsTable() {
+        $.get("/api/comments", { 'fitnessId': id }, function (data, status) {
+            /*
+            let tableContent = "<table border='1'><caption align='center'>Komentari</caption><tr><th>Komentar</th><th>Ocena</th></tr>";
+            for (comment in data) {
+                tableContent += `<tr><td>${data[comment].Text}</td><td>${data[comment].Rating}</td></tr>`;
+            }
+            tableContent += "</table>";
+            */
+            let tableContent = "<h3>Komentari</h3><dl>"
+            for (comment in data) {
+                tableContent += `<dt>${data[comment].Creator.Username} : </dt><dd>${data[comment].Text}<br/>Ocena:${data[comment].Rating}`;
+                // userIsOwner je true ako je korisnik VLASNIK i ako je bas vlasnik ovog fitnes centra
+                // onda treba da moze da odobri/odbije komentare
+                if (userIsOwner) {
+                    tableContent += "<br/>" + GetCommentStatus(data[comment]);
+                }
+                tableContent += "</dd>";
+            }
+            tableContent += "</dl>";
+            $("#fitnessCenterCommentsTable").html(tableContent);
+
+            $(".approveButton").click(function (event) {
+                let visible = event.target.textContent == "Odobri";  // vrati tekst koji se nalazi u button
+                let commentId = event.target.name;
+                $.ajax("/api/comments/", {
+                    method: 'PUT',
+                    data: { 'id': commentId, 'approved' : true, 'visible' : visible},
+                    success: function (result) {
+                        GenerateCommentsTable();
+                    }
+                }).fail(function (data) {
+                    alert(data.responseJSON.Message);
+                });
+            });
+        });
+    }
+
+    $("#sendCommentButton").click(function () {
+        let text = $("#commentText").val();
+        let rating = $("#commentRating").val();
+        $("#commentText").css("border", "1px solid black");
+        if (text == "" || text.includes(";")) {
+            $("#commentText").css("border", "1px solid red");
+            return;
+        }
+        // u suprotnom salji
+        $.post('/api/comments', {'text' : text, 'rating' : rating, 'fitnesscenterid' : id},
+            function (result) {
+                // result.responeJSON.Message je undefined ovde, ali dole moze
+                // samo result je string koji posaljemo u Ok("text");
+                alert(result);
+                // izbrisi tekst u textarea i vrati ocenu na 1
+                $("#commentText").val("");
+                $("#commentRating").val("1");
+            }
+        ).fail(function (data) {
+            alert(data.responseJSON.Message);
+        });
+    });
+
+
+    // ako je komentar odobren generise tekst, a ako nije generise dugmice
+    function GetCommentStatus(comment) {
+        let text = "";
+        if (comment.Approved) {
+            if (comment.Visible) {
+                text += "<font color='green'>Odobren</font>";
+                return text;
+            }
+            text += "<font color='red'>Odbijen</font>";
+            return text;
+        }
+        text += `<button class='approveButton' name='${comment.Id}'>Odobri</button>&nbsp;<button class='approveButton' name='${comment.Id}'>Odbij</button>`;
+        return text;
     }
 })

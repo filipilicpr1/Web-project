@@ -31,6 +31,41 @@ namespace MyWebApp.Models
             return CommentsList.FindAll(item => item.RelatedFitnessCenter.Id == fitnessId);
         }
 
+        public static List<Comment> FindAllVisibleByFitnessCenterId(int fitnessId)
+        {
+            return CommentsList.FindAll(item => (item.RelatedFitnessCenter.Id == fitnessId) && item.Visible);
+        }
+
+        public static Comment CreateComment(string text, int rating, User u, FitnessCenter fc)
+        {
+            Comment c = new Comment();
+            // id se generise u AddComment
+            c.Text = text;
+            c.Rating = rating;
+            c.Visible = false;
+            c.Approved = false;
+            c.Creator = new User(u);
+            c.RelatedFitnessCenter = new FitnessCenter(fc);
+            return c;
+        }
+
+        public static void AddComment(Comment c)
+        {
+            c.Id = GenerateId();
+            CommentsList.Add(c);
+            SaveComments();
+            SaveCommentsCreator();
+            SaveRelatedFitnessCenter();
+        }
+
+        public static void UpdateComment(Comment c)
+        {
+            Comment comment = FindById(c.Id);
+            comment.Approved = c.Approved;
+            comment.Visible = c.Visible;
+            SaveComments();
+        }
+
         public static void LoadInitialComments()
         {
             CommentsList = new List<Comment>();
@@ -57,6 +92,8 @@ namespace MyWebApp.Models
             c.Id = int.Parse(values[0]);
             c.Text = values[1];
             c.Rating = int.Parse(values[2]);
+            c.Visible = bool.Parse(values[3]);
+            c.Approved = bool.Parse(values[4]);
             return c;
         }
 
@@ -96,6 +133,39 @@ namespace MyWebApp.Models
             int commentId = int.Parse(line.Split(';')[1]);
             Comment c = FindById(commentId);
             c.RelatedFitnessCenter = new FitnessCenter(FitnessCenters.FindById(fitnessCenterId));
+        }
+
+        private static void SaveComments()
+        {
+            StreamWriter sw = new StreamWriter(FilePath);
+            foreach (Comment c in CommentsList)
+            {
+                string text = c.Id + ";" + c.Text + ";" + c.Rating + ";" + c.Visible + ";" + c.Approved;
+                sw.WriteLine(text);
+            }
+            sw.Close();
+        }
+
+        private static void SaveCommentsCreator()
+        {
+            StreamWriter sw = new StreamWriter(VisitorFilePath);
+            foreach (Comment c in CommentsList)
+            {
+                string text = c.Creator.Id + ";" + c.Id;
+                sw.WriteLine(text);
+            }
+            sw.Close();
+        }
+
+        private static void SaveRelatedFitnessCenter()
+        {
+            StreamWriter sw = new StreamWriter(RelatedFitnessCenterFilePath);
+            foreach (Comment c in CommentsList)
+            {
+                string text = c.RelatedFitnessCenter.Id + ";" + c.Id;
+                sw.WriteLine(text);
+            }
+            sw.Close();
         }
     }
 }

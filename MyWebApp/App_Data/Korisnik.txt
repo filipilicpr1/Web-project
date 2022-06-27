@@ -4,7 +4,7 @@
 76544;joovana;france1;Jovana;Kostic;Zenski;jovana98@gmail.com;05/05/1998;TRENER
 12222;saitama;grusrb;Pera;Peric;Zenski;perica@gmail.com;01/05/2003;POSETILAC
 34444;macakiti1;MacaKiti98;Miss;Kiti;Drugo;kitkat6@tutanota.com;12/10/2017;POSETILAC
-882674887;noviNovica;novica123;Novicaa;Velickovic;Drugo;novica@hiv.rs;07/05/1997;POSETILAC
+882674887;novicaa;novica123;Novicaa;Velickovic;Drugo;novica@hiv.rs;07/07/1997;POSETILAC
 1383338672;dimi69;dimacar;Dimimi;Serac;Muski;dimi@racunar.mi;20/11/2011;POSETILAC
 239955583;djole1;djolekralj;Djordje;Kostic;Muski;djole@vr.rs;07/06/2017;POSETILAC
 328907041;mrav;mravcar;Malisa;Mrav;Drugo;mrav@mrv.com;31/12/2012;POSETILAC

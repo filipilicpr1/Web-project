@@ -1,0 +1,114 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script src="../Scripts/jquery-3.3.1.js"></script>
+    <script src="../Scripts/newGroupTrainingScript.js"></script>
+    <style>
+        caption {
+            font-size: 16px;
+            font-weight: bold;
+            color: darkblue;
+        }
+        div#inputFields {
+            width: 50%;
+            float: right;
+            align-content: center
+        }
+        div#groupTrainingsDiv {
+            float: left;
+            width: 50%;
+            align-content: center
+        }
+        button#createTrainingButton {
+            width: 100%;
+            height: 100%;
+        }
+        button#editTrainingButton {
+            width: 100%;
+            height: 100%;
+        }
+        input.timeInput {
+            width: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div id="groupTrainingsDiv">
+        <div id="groupTrainingsTableDiv">
+
+        </div>
+        <a href="index.html">Nazad</a>
+    </div>
+    <div id="inputFields">
+        <div>
+            <button id="showNewTrainingTableButton">Novi trening</button>
+        </div>
+        <br />
+        <div id="newTrainingTable">
+            <table>
+                <tr>
+                    <td>Naziv :</td>
+                    <td><input type="text" id="trainingName" /></td>
+                    <td align="left">
+                        <font id="invalidTrainingName"></font>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Vrsta treninga :</td>
+                    <td><input type="text" id="trainingType" /></td>
+                    <td align="left">
+                        <font id="invalidTrainingType"></font>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Trajanje :</td>
+                    <td><input type="text" id="trainingDuration" /></td>
+                    <td align="left">
+                        <font id="invalidTrainingDuration"></font>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Kapacitet :</td>
+                    <td><input type="text" id="trainingCapacity" /></td>
+                    <td align="left">
+                        <font id="invalidTrainingCapacity"></font>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Datum odrzavanja :</td>
+                    <td>
+                        Godina&nbsp;
+                        <select id="trainingYear"></select>
+                        <span id="regMonth">
+                            <font id="fontMonth">
+                                Mesec&nbsp;
+                            </font>
+                            <select id="trainingMonth"></select>
+                        </span>
+                        <span id="regDay">
+                            <font id="fontDay">
+                                Dan&nbsp;
+                            </font>
+                            <select id="trainingDay"></select>
+                        </span>
+                        <input class="timeInput" type="text" id="trainingHour" />
+                        :
+                        <input class="timeInput" type="text" id="trainingMinute" />
+                    </td>
+                    <td align="left">
+                        <font id="invalidTrainingDate"></font>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <button id="createTrainingButton">Kreiraj</button>
+                        <button id="editTrainingButton">Izmeni</button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

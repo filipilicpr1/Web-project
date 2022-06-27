@@ -91,6 +91,24 @@ namespace MyWebApp.Models
             sw.Close();
         }
 
+        public static void SaveGroupTrainingTrainer()
+        {
+            StreamWriter sw = new StreamWriter(GroupTrainingTrainerFilePath);
+            foreach (User u in UsersList)
+            {
+                if(u.UserType != EUserType.TRENER)
+                {
+                    continue;
+                }
+                foreach(GroupTraining gt in u.TrainingGroupTrainings)
+                {
+                    string text = gt.Id + ";" + u.Id;
+                    sw.WriteLine(text);
+                }
+            }
+            sw.Close();
+        }
+
         private static User GetSingleUser(string line)
         {
             User u = new User();

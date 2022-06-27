@@ -9,6 +9,8 @@
     var userIsTrainer = false;
 
     InitiateYearMonthDayHourMin();
+    $("#trainingTableDiv").html("<h1>Nema pravo da pristupite ovom sadrzaju</h1>");
+    $("#trainingPretraga").hide();
 
     function InitiateYearMonthDayHourMin() {
         GenerateOptionsForMonthTrainer();
@@ -16,8 +18,8 @@
         let minYear = $("#minYear").val();
         let maxYear = $("#maxYear").val();
         let month = $("#minMonth").val();
-        GenerateOptionsForDay(minYear, month, "#minDay");
-        GenerateOptionsForDay(maxYear, month, "#maxDay");
+        GenerateOptionsForDayTrainer(minYear, month, "#minDay");
+        GenerateOptionsForDayTrainer(maxYear, month, "#maxDay");
         // danasnji dan za max datum
         var today = new Date();
         var dd = today.getDate();
@@ -48,7 +50,7 @@
         }
     }
 
-    function GenerateOptionsForDay(year, month, selector) {
+    function GenerateOptionsForDayTrainer(year, month, selector) {
         $(selector).empty();
         for (let i = 1; i < 29; i++) {
             $(selector).append('<option>' + i + '</option>');
@@ -82,7 +84,7 @@
         let month = $("#minMonth").val();
         let day = $("#minDay").val();
         // ovo resetuje dan, pa proverimo da li novi select sadrzi stari dan
-        GenerateOptionsForDay(year, month, "#minDay");
+        GenerateOptionsForDayTrainer(year, month, "#minDay");
         var exists = false;
         $('#minDay  option').each(function () {
             if (this.value == day) {
@@ -99,7 +101,7 @@
         let month = $("#maxMonth").val();
         let day = $("#maxDay").val();
         // ovo resetuje dan, pa proverimo da li novi select sadrzi stari dan
-        GenerateOptionsForDay(year, month, "#maxDay");
+        GenerateOptionsForDayTrainer(year, month, "#maxDay");
         var exists = false;
         $('#maxDay  option').each(function () {
             if (this.value == day) {
@@ -116,7 +118,7 @@
         let month = $("#minMonth").val();
         let day = $("#minDay").val();
         // ovo resetuje dan, pa proverimo da li novi select sadrzi stari dan
-        GenerateOptionsForDay(year, month, "#minDay");
+        GenerateOptionsForDayTrainer(year, month, "#minDay");
         var exists = false;
         $('#minDay  option').each(function () {
             if (this.value == day) {
@@ -133,7 +135,7 @@
         let month = $("#maxMonth").val();
         let day = $("#maxDay").val();
         // ovo resetuje dan, pa proverimo da li novi select sadrzi stari dan
-        GenerateOptionsForDay(year, month, "#maxDay");
+        GenerateOptionsForDayTrainer(year, month, "#maxDay");
         var exists = false;
         $('#maxDay  option').each(function () {
             if (this.value == day) {
@@ -145,33 +147,43 @@
         }
     });
 
-    $.get("/api/users", { 'id': userId }, function (data, status) {
-        // dobavimo usera, pa odredimo koji je tip 
-        userIsVisitor = userType[data.UserType] == "POSETILAC"; // za sad se generise samo sadrzaj za posetioca
-        userIsTrainer = userType[data.UserType] == "TRENER";
-        // u zavisnosti od tipa prikazemo odredjene dugmice
-        let path = "";
-        if (userIsVisitor) {
-            path = "/api/grouptrainings/visitedtrainings";
-            $("#visitorPretragaButton").show();
-            $("#trainerPretragaButton").hide();
-            $("#visitorSearch").show();
-            $("#trainerMinSearch").hide();
-            $("#trainerMaxSearch").hide();
-        }
+    GetTrainingUser();
 
-        if (userIsTrainer) {
-            path = "/api/grouptrainings/completedtrainings";
-            $("#visitorPretragaButton").hide();
-            $("#trainerPretragaButton").show();
-            $("#visitorSearch").hide();
-            $("#trainerMinSearch").show();
-            $("#trainerMaxSearch").show();
+    function GetTrainingUser() {
+        if (userId != null && userId != "") {
+            $.get("/api/users", { 'id': userId }, function (data, status) {
+                // dobavimo usera, pa odredimo koji je tip 
+                userIsVisitor = userType[data.UserType] == "POSETILAC"; // za sad se generise samo sadrzaj za posetioca
+                userIsTrainer = userType[data.UserType] == "TRENER";
+                // u zavisnosti od tipa prikazemo odredjene dugmice
+                let path = "";
+                if (userIsVisitor) {
+                    path = "/api/grouptrainings/visitedtrainings";
+                    $("#visitorPretragaButton").show();
+                    $("#trainerPretragaButton").hide();
+                    $("#visitorSearch").show();
+                    $("#trainerMinSearch").hide();
+                    $("#trainerMaxSearch").hide();
+                    $("#trainingPretraga").show();
+                    $("#trainingTableDiv").html("");
+                }
+
+                if (userIsTrainer) {
+                    path = "/api/grouptrainings/completedtrainings";
+                    $("#visitorPretragaButton").hide();
+                    $("#trainerPretragaButton").show();
+                    $("#visitorSearch").hide();
+                    $("#trainerMinSearch").show();
+                    $("#trainerMaxSearch").show();
+                    $("#trainingPretraga").show();
+                    $("#trainingTableDiv").html("");
+                }
+                GetData(path);
+            }).fail(function (data) {
+                alert(data.responseJSON.Message);
+            });
         }
-        GetData(path);
-    }).fail(function (data) {
-        alert(data.responseJSON.Message);
-    });
+    }
 
     function GetData(path) {
         $.get(path, function (data, status) {
@@ -236,8 +248,8 @@
         let maxYear = $("#maxYear").val();
         let maxMonth = $("#maxMonth").val();
         let maxDay = $("#maxDay").val();
-        let minDate = GetDate(minYear, minMonth, minDay, minHour, minMin);
-        let maxDate = GetDate(maxYear, maxMonth, maxDay, maxHour, maxMin);
+        let minDate = GetTrainingDate(minYear, minMonth, minDay, minHour, minMin);
+        let maxDate = GetTrainingDate(maxYear, maxMonth, maxDay, maxHour, maxMin);
 
         let name = $("#nazivPretraga").val();
         let trainingType = $("#tipPretraga").val();
@@ -309,7 +321,7 @@
         return isValid;
     }
 
-    function GetDate(year, month, day, hour, minute) {
+    function GetTrainingDate(year, month, day, hour, minute) {
         if (day < 10) {
             day = "0" + day;
         }
@@ -346,12 +358,12 @@
         // fukncije za sortiranje pozivaju GenerateTableContent kome proslede sortiranu listu
         $("#nazivSort").click(function () {
             if (ascendingName) {
-                SortByNameAsc(data);
+                SortTrainingsByNameAsc(data);
                 ascendingName = false;
                 ascendingType = true;
                 ascendingDate = true;
             } else {
-                SortByNameDesc(data);
+                SortTrainingsByNameDesc(data);
                 ascendingName = true;
                 ascendingType = true;
                 ascendingDate = true;
@@ -362,12 +374,12 @@
         
         $("#vrstaTreningaSort").click(function () {
             if (ascendingType) {
-                SortByTypeAsc(data);
+                SortTrainingsByTypeAsc(data);
                 ascendingType = false;
                 ascendingName = true;
                 ascendingDate = true;
             } else {
-                SortByTypeDesc(data);
+                SortTrainingsByTypeDesc(data);
                 ascendingType = true;
                 ascendingName = true;
                 ascendingDate = true;
@@ -378,12 +390,12 @@
         
         $("#datumSort").click(function () {
             if (ascendingDate) {
-                SortByDateAsc(data);
+                SortTrainingsByDateAsc(data);
                 ascendingDate = false;
                 ascendingName = true;
                 ascendingType = true;
             } else {
-                SortByDateDesc(data);
+                SortTrainingsByDateDesc(data);
                 ascendingDate = true;
                 ascendingName = true;
                 ascendingType = true;
@@ -393,7 +405,7 @@
         });
     }
 
-    function SortByNameAsc(data) {
+    function SortTrainingsByNameAsc(data) {
         let sortedList = []
         for (groupTraining in data) {
             sortedList.push(data[groupTraining])
@@ -412,7 +424,7 @@
         GenerateTableContent(sortedList);
     }
 
-    function SortByNameDesc(data) {
+    function SortTrainingsByNameDesc(data) {
         let sortedList = []
         for (groupTraining in data) {
             sortedList.push(data[groupTraining])
@@ -431,7 +443,7 @@
         GenerateTableContent(sortedList);
     }
 
-    function SortByTypeAsc(data) {
+    function SortTrainingsByTypeAsc(data) {
         let sortedList = []
         for (groupTraining in data) {
             sortedList.push(data[groupTraining])
@@ -450,7 +462,7 @@
         GenerateTableContent(sortedList);
     }
 
-    function SortByTypeDesc(data) {
+    function SortTrainingsByTypeDesc(data) {
         let sortedList = []
         for (groupTraining in data) {
             sortedList.push(data[groupTraining])
@@ -469,7 +481,7 @@
         GenerateTableContent(sortedList);
     }
 
-    function SortByDateAsc(data) {
+    function SortTrainingsByDateAsc(data) {
         let sortedList = []
         let dateList = []
         for (groupTraining in data) {
@@ -496,7 +508,7 @@
         GenerateTableContent(sortedList);
     }
 
-    function SortByDateDesc(data) {
+    function SortTrainingsByDateDesc(data) {
         let sortedList = []
         let dateList = []
         for (groupTraining in data) {

@@ -18,11 +18,16 @@
                 user = data
                 userIsVisitor = userType[user.UserType] == "POSETILAC"; // za sad se generise samo sadrzaj za posetioca
                 userIsOwner = CheckIfUserOwner(user);
+                // ako je korisnik ulogovan, prvo ga dobavimo, odredimo prava pristupa, pa onda kreiramo sadrzaj
+                GenerateContent();
 
                 if (userIsVisitor) {
                     $("#commentDiv").show();
                 }
             });
+        } else {
+            // ako korisnik nije ulogovan samo kreiramo sadrzaj
+            GenerateContent();
         }
     }
 
@@ -38,21 +43,23 @@
         return false;
     }
 
-    // popunjavanje podataka o izabranom fitnes centru
-    $.get("/api/fitnesscenters/", { 'id': id }, function (data, status) {
-        $("#naziv").html(data.Name);
-        $("#adresa").html(data.Address);
-        $("#godina").html(data.YearCreated);
-        $("#vlasnik").html(data.Owner.Name + " " + data.Owner.LastName);
-        $("#mesecna").html(data.MonthlySubscription);
-        $("#godisnja").html(data.YearlySubscription);
-        $("#jedanTrening").html(data.TrainingCost);
-        $("#grupniTrening").html(data.GroupTrainingCost);
-        $("#personalniTrening").html(data.PersonalTrainingCost);
+    function GenerateContent() {
+        // popunjavanje podataka o izabranom fitnes centru
+        $.get("/api/fitnesscenters/", { 'id': id }, function (data, status) {
+            $("#naziv").html(data.Name);
+            $("#adresa").html(data.Address);
+            $("#godina").html(data.YearCreated);
+            $("#vlasnik").html(data.Owner.Name + " " + data.Owner.LastName);
+            $("#mesecna").html(data.MonthlySubscription);
+            $("#godisnja").html(data.YearlySubscription);
+            $("#jedanTrening").html(data.TrainingCost);
+            $("#grupniTrening").html(data.GroupTrainingCost);
+            $("#personalniTrening").html(data.PersonalTrainingCost);
 
-        GenerateGroupTrainingsTable();
-        GenerateCommentsTable();
-    });
+            GenerateGroupTrainingsTable();
+            GenerateCommentsTable();
+        });
+    }
 
     function GenerateGroupTrainingsTable() {
         $.get("/api/grouptrainings", { 'fitnessId': id }, function (data, status) {

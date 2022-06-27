@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text.RegularExpressions;
 using System.Web.Http;
 
 namespace MyWebApp.Controllers
@@ -21,6 +22,125 @@ namespace MyWebApp.Controllers
             // prvo update za svaki grupni trening da li je u buducnosti
             GroupTrainings.UpdateGroupTrainings();
             return GroupTrainings.FindAllUpcomingByFitnessCenterId(fitnessId);
+        }
+
+        public IHttpActionResult Post(GroupTraining groupTraining)
+        {
+            CookieHeaderValue cookieRecv = Request.Headers.GetCookies("session-id").FirstOrDefault();
+            User u = GetLoggedInUser(cookieRecv);
+            if (u == null)
+            {
+                return BadRequest("Not authorized");
+            }
+            if (u.UserType != EUserType.TRENER)
+            {
+                return BadRequest("Not authorized");
+            }
+            string errorMessage = "";
+            bool update = false;
+            bool isGroupTrainingValid = ValidateGroupTraining(groupTraining, null, out errorMessage,update);   // null je user jer on treba za proveru u POST vec u PUT
+            if (!isGroupTrainingValid)
+            {
+                return BadRequest(errorMessage);
+            }
+            GroupTrainings.AddGroupTraining(groupTraining, u);
+            return Ok("Grupni trening kreiran");
+        }
+        
+        public IHttpActionResult Put(GroupTraining groupTraining)
+        {
+            CookieHeaderValue cookieRecv = Request.Headers.GetCookies("session-id").FirstOrDefault();
+            User u = GetLoggedInUser(cookieRecv);
+            if (u == null)
+            {
+                return BadRequest("Not authorized");
+            }
+            if (u.UserType != EUserType.TRENER)
+            {
+                return BadRequest("Not authorized");
+            }
+            string errorMessage = "";
+            bool update = true;
+            bool isGroupTrainingValid = ValidateGroupTraining(groupTraining, u, out errorMessage, update);
+            if (!isGroupTrainingValid)
+            {
+                return BadRequest(errorMessage);
+            }
+            GroupTrainings.UpdateGroupTraining(groupTraining);
+            return Ok("Grupni trening izmenjen");
+        }
+
+        private bool ValidateGroupTraining(GroupTraining gt, User u, out string errorMessage, bool update)
+        {
+            errorMessage = "";
+            var reg = @"^[a-zA-Z0-9 ]{3,20}$";
+            if (!Regex.IsMatch(gt.Name, reg))
+            {
+                errorMessage = "Nevalidan naziv treninga";
+                return false;
+            }
+            if (!Regex.IsMatch(gt.TrainingType, reg))
+            {
+                errorMessage = "Nevalidan naziv tipa treninga";
+                return false;
+            }
+            if (gt.Duration < 0 || gt.Duration > 999)
+            {
+                errorMessage = "Nevalidno trajanje treninga";
+                return false;
+            }
+            if (gt.VisitorCapacity < 0 || gt.VisitorCapacity > 999)
+            {
+                errorMessage = "Nevalidan kapacitet treninga";
+                return false;
+            }
+            DateTime currentDate = update ? DateTime.Now : DateTime.Now.AddDays(3);
+            if (!CompareDates(currentDate, gt.DateOfTraining))
+            {
+                errorMessage = update ? "Trening ne moze biti u proslosti" : "Trening mora biti kreiran bar 3 dana unapred";
+                return false;
+            }
+
+            if (!update)
+            {
+                return true;
+            }
+
+            GroupTraining originalGt = GroupTrainings.FindById(gt.Id);
+
+            if (!originalGt.Upcoming)
+            {
+                errorMessage = "Nije moguce menjati vec odrzane treninge";
+                return false;
+            }
+            if(gt.VisitorCapacity < originalGt.VisitorCount)
+            {
+                errorMessage = "Nije moguce zadati manji kapacitet od prijavljenog broja posetioca";
+                return false;
+            }
+            if(originalGt.FitnessCenterLocation.Id != u.FitnessCenterTrainer.Id)
+            {
+                errorMessage = "Ne radite u fitnes centru u kojem se odrzava trening";
+                return false;
+            }
+            if (!CheckIfUserIsTrainerOnGroupTraining(u,originalGt))
+            {
+                errorMessage = "Niste trener na tom treningu";
+                return false;
+            }
+            return true;
+        }
+
+        private bool CheckIfUserIsTrainerOnGroupTraining(User u, GroupTraining gt)
+        {
+            foreach(var item in u.TrainingGroupTrainings)
+            {
+                if(item.Id == gt.Id)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
         [Route("api/grouptrainings/apply")]
@@ -92,6 +212,26 @@ namespace MyWebApp.Controllers
             return true;
         }
 
+        [Route("api/grouptrainings/trainedtrainings")]
+        [HttpGet]
+        [AllowAnonymous]
+        public List<GroupTraining> GetAllTrainedGroupTrainings()
+        {
+            GroupTrainings.UpdateGroupTrainings();
+            // provera da li je korisnik ulogovan
+            // ako nije vrati null, ako jeste vrati tog korisnika
+            CookieHeaderValue cookieRecv = Request.Headers.GetCookies("session-id").FirstOrDefault();
+            User u = GetLoggedInUser(cookieRecv);
+            if (u == null)
+            {
+                return null;
+            }
+            if (u.UserType != EUserType.TRENER)
+            {
+                return null;
+            }
+            return GroupTrainings.FindAllTrainingsByTrainer(u);
+        }
 
         [Route("api/grouptrainings/visitedtrainings")]
         [HttpGet]

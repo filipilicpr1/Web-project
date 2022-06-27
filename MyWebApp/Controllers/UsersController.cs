@@ -34,6 +34,16 @@ namespace MyWebApp.Controllers
 
         public IHttpActionResult Put(User user)
         {
+            string sessionId = "";
+            CookieHeaderValue cookieRecv = Request.Headers.GetCookies("session-id").FirstOrDefault();
+            if (cookieRecv != null)
+            {
+                sessionId = cookieRecv["session-id"].Value;
+            }
+            if (sessionId == "" || Users.FindById(int.Parse(sessionId)).Id != user.Id)
+            {
+                return BadRequest("Not authorized");
+            }
             string errorMessage = "";
             bool update = true;
             bool isUserValid = ValidateUser(user, out errorMessage, update);
@@ -45,6 +55,7 @@ namespace MyWebApp.Controllers
             return Ok("Korisnik uspesno izmenjen");
         }
 
+        // update dodat jer se ista metoda koristi za validaciju i kod PUT, gde username moze da je isti
         private bool ValidateUser(User user, out string errorMessage, bool update)
         {
             errorMessage = "";

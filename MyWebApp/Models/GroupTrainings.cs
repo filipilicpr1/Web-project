@@ -67,6 +67,45 @@ namespace MyWebApp.Models
             return retVal;
         }
 
+        public static List<GroupTraining> FindAllTrainingsByTrainer(User u)
+        {
+            List<GroupTraining> retVal = new List<GroupTraining>();
+            foreach (var item in u.TrainingGroupTrainings)
+            {
+                retVal.Add(GroupTrainings.FindById(item.Id));
+            }
+            return retVal;
+        }
+
+        public static void AddGroupTraining(GroupTraining gt,User trainer)
+        {
+            gt.Id = GenerateId();
+            gt.Upcoming = true;
+            gt.VisitorCount = 0;
+            gt.FitnessCenterLocation = new FitnessCenter(FitnessCenters.FindById(trainer.FitnessCenterTrainer.Id));
+            GroupTrainingsList.Add(gt);
+            trainer.TrainingGroupTrainings.Add(new GroupTraining(gt));
+            SaveGroupTrainings();
+            SaveFitnessCenterGroupTraining();
+            Users.SaveGroupTrainingTrainer();
+        }
+
+        public static void UpdateGroupTraining(GroupTraining gt)
+        {
+            GroupTraining originalGt = FindById(gt.Id);
+            if (originalGt == null)
+            {
+                return;
+            }
+            originalGt.Name = gt.Name;
+            originalGt.TrainingType = gt.TrainingType;
+            originalGt.Duration = gt.Duration;
+            originalGt.VisitorCapacity = gt.VisitorCapacity;
+            originalGt.DateOfTraining = gt.DateOfTraining;
+            originalGt.Upcoming = CheckDate(originalGt.DateOfTraining);
+            SaveGroupTrainings();
+        }
+
         public static void LoadInitialGroupTrainings()
         {
             GroupTrainingsList = new List<GroupTraining>();
@@ -108,10 +147,14 @@ namespace MyWebApp.Models
             int gtYear = gtDate.Year;
             int gtMonth = gtDate.Month;
             int gtDay = gtDate.Day;
+            int gtHour = gtDate.Hour;
+            int gtMinute = gtDate.Minute;
             DateTime currentDate = DateTime.Now;
             int currYear = currentDate.Year;
             int currMonth = currentDate.Month;
             int currDay = currentDate.Day;
+            int currHour = currentDate.Hour;
+            int currMinute = currentDate.Minute;
 
             if(gtYear > currYear)
             {
@@ -139,6 +182,26 @@ namespace MyWebApp.Models
             }
 
             if(gtDay < currDay)
+            {
+                return false;
+            }
+
+            if(gtHour > currHour)
+            {
+                return true;
+            }
+
+            if(gtHour < currHour)
+            {
+                return false;
+            }
+
+            if(gtMinute > currMinute)
+            {
+                return true;
+            }
+
+            if(gtMinute < currMinute)
             {
                 return false;
             }
@@ -212,6 +275,17 @@ namespace MyWebApp.Models
                     string text = gt.Id + ";" + u.Id;
                     sw.WriteLine(text);
                 }
+            }
+            sw.Close();
+        }
+
+        private static void SaveFitnessCenterGroupTraining()
+        {
+            StreamWriter sw = new StreamWriter(FitnessCenterGroupTrainingFilePath);
+            foreach (GroupTraining gt in GroupTrainingsList)
+            {
+                string text = gt.FitnessCenterLocation.Id + ";" + gt.Id;
+                sw.WriteLine(text);
             }
             sw.Close();
         }

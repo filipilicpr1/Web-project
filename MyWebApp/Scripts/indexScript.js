@@ -15,7 +15,7 @@
 
     // sakrijemo sve linkove na pocetku, i onda prikazemo one koje treba
     $("#visitedGroupTrainingsLink").hide();
-
+    $("#newGroupTrainingLink").hide();
     // prikaz odredjenog sadrzaja u zavisnosti od toga da li je korsnik ulogovan ili ne
     if (userId == null || userId == "") {
         // ako nije ulogovan
@@ -56,6 +56,7 @@
 
             if (userIsTrainer) {
                 $("#visitedGroupTrainingsLink").show();
+                $("#newGroupTrainingLink").show();
             }
 
         }).fail(function (data) {

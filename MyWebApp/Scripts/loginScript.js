@@ -129,6 +129,7 @@
 
             if (userIsTrainer) {
                 $("#visitedGroupTrainingsLink").show();
+                $("#newGroupTrainingLink").show();
             }
 
         }).fail(function (data) {
@@ -161,6 +162,7 @@
 
         // sakrij sve linkove
         $("#visitedGroupTrainingsLink").hide();
+        $("#newGroupTrainingLink").hide();
     }
     
     function EmptyLoginFields() {

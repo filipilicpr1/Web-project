@@ -71,12 +71,9 @@
         // dan ne mora da se menja, jer kad se izmeni mesec, onda se ponovo izgenerisu dani i postave se na pocetnu vrednost
         $("#registerYear").val("2022");
         $("#registerMonth").val("Januar");
-        $("#registerDay").val("1");
-        //$("#registerMonth").hide();
-        //$("#registerDay").hide();
-        //$("#fontDay").html("");
-        //$("#fontMonth").html("");
-        //$("#invalidDate").html("");
+        let year = $("#registerYear").val();
+        let month = $("#registerMonth").val();
+        GenerateOptionsForDay(year, month);
         // postavlja pol na muski po default
         $("input[name='radioGender'][value='Muski']").prop("checked", true);
         // sve je na pocetku invalid
@@ -86,7 +83,6 @@
         isConfirmPasswordValid = false;
         isNameValid = false;
         isLastNameValid = false;
-        //isDateValid = false;
     }
 
     function GenerateProfileFields() {

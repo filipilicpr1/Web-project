@@ -86,8 +86,9 @@ namespace MyWebApp.Controllers
         {
             errorMessage = "";
             code = HttpStatusCode.BadRequest;
-            var reg = @"^[A-Z][a-zA-Z0-9 ]{2,19}$";
-            if (!Regex.IsMatch(gt.Name, reg))
+            var nameReg = @"^[A-Z][a-zA-Z0-9 ]{2,19}$";
+            var reg = @"^[a-zA-Z0-9 ]{3,20}$";
+            if (!Regex.IsMatch(gt.Name, nameReg))
             {
                 errorMessage = "Nevalidan naziv treninga";
                 return false;

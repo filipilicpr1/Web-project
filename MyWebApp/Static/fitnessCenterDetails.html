@@ -26,8 +26,8 @@
             font-weight : normal;
             color : green;
         }
-        select{
-            width : 100%;
+        select.commentRating {
+            width: 100%;
         }
         textarea{
             resize : none;
@@ -43,13 +43,21 @@
     <div id="fitnessCenterDetails">
         <p>Naziv: <font id="naziv"></font></p>
         <p>Adresa: <font id="adresa"></font></p>
-        <p>Godina osnivanja: <font id="godina"></font><br /></p>
+        <p>Godina otvaranja: <font id="godina"></font><br /></p>
         <p>Vlasnik: <font id="vlasnik"></font><br /></p>
         <p>Mesecna clanarina: <font id="mesecna"></font><br /></p>
         <p>Godisnja clanarina: <font id="godisnja"></font><br /></p>
         <p>Cena jednog treninga: <font id="jedanTrening"></font><br /></p>
         <p>Cena grupnog treninga: <font id="grupniTrening"></font><br /></p>
         <p>Cena personalnog treninga: <font id="personalniTrening"></font><br /></p>
+    </div>
+    <br />
+    <button id="showEligibleTrainersButton">Registruj trenera</button>
+    <br />
+    <div id="registerTrainerDiv">
+        <select id="eligibleTrainers"></select>
+        &nbsp;
+        <button id="submitTrainerButton">Registruj</button>
     </div>
     <br />
     <br />

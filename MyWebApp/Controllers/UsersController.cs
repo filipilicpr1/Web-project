@@ -121,6 +121,78 @@ namespace MyWebApp.Controllers
             return true;
         }
 
+
+        [Route("api/users/eligibletrainers")]
+        [HttpGet]
+        [AllowAnonymous]
+        public HttpResponseMessage GetEligibleTrainers()
+        {
+            CookieHeaderValue cookieRecv = Request.Headers.GetCookies("session-id").FirstOrDefault();
+            User u = GetLoggedInUser(cookieRecv);
+            if (u == null)
+            {
+                return Request.CreateResponse(HttpStatusCode.Unauthorized, "Not logged in");
+            }
+            if (u.UserType != EUserType.VLASNIK)
+            {
+                return Request.CreateResponse(HttpStatusCode.Forbidden, "Not authorized");
+            }
+            return Request.CreateResponse(HttpStatusCode.OK, Users.FindEligibleTrainers());
+        }
+
+        [Route("api/users/registertrainer")]
+        [HttpPut]
+        [AllowAnonymous]
+        public HttpResponseMessage RegisterTrainer(RegisterTrainerDTO registerTrainerDTO)
+        {
+            CookieHeaderValue cookieRecv = Request.Headers.GetCookies("session-id").FirstOrDefault();
+            User u = GetLoggedInUser(cookieRecv);
+            if (u == null)
+            {
+                return Request.CreateResponse(HttpStatusCode.Unauthorized, "Not logged in");
+            }
+            if (u.UserType != EUserType.VLASNIK)
+            {
+                return Request.CreateResponse(HttpStatusCode.Forbidden, "Not authorized");
+            }
+            User newTrainer = Users.FindById(registerTrainerDTO.UserId);
+            FitnessCenter fc = FitnessCenters.FindById(registerTrainerDTO.FitnessCenterId);
+            string errorMessage;
+            HttpStatusCode code;
+            bool isRegistrationValid = ValidateTrainerRegistration(newTrainer, u, fc, out errorMessage, out code);
+            if (!isRegistrationValid)
+            {
+                return Request.CreateResponse(code, errorMessage);
+            }
+            Users.RegisterTrainer(newTrainer, fc);
+            return Request.CreateResponse(HttpStatusCode.OK, "Trener registrovan");
+        }
+
+        private bool ValidateTrainerRegistration(User newTrainer, User owner, FitnessCenter fc, out string errorMessage, out HttpStatusCode code)
+        {
+            errorMessage = "";
+            code = HttpStatusCode.BadRequest;
+
+            if(newTrainer.UserType != EUserType.POSETILAC)
+            {
+                errorMessage = "User not eligible";
+                return false;
+            }
+            if(newTrainer.VisitingGroupTrainings.Count != 0)
+            {
+                errorMessage = "User not eligible";
+                return false;
+            }
+            if(fc.Owner.Id != owner.Id)
+            {
+                code = HttpStatusCode.Forbidden;
+                errorMessage = "Not authorized";
+                return false;
+            }
+            code = HttpStatusCode.OK;
+            return true;
+        }
+
         [Route("api/users/login")]
         [HttpPost]
         [AllowAnonymous]
@@ -191,6 +263,21 @@ namespace MyWebApp.Controllers
             cookie.Domain = Request.RequestUri.Host;
             cookie.Path = "/";
             return cookie;
+        }
+
+        private User GetLoggedInUser(CookieHeaderValue cookieRecv)
+        {
+            string sessionId = "";
+            if (cookieRecv == null)
+            {
+                return null;
+            }
+            sessionId = cookieRecv["session-id"].Value;
+            if (sessionId == "")
+            {
+                return null;
+            }
+            return Users.FindById(int.Parse(sessionId));
         }
     }
 }

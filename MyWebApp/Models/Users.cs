@@ -25,6 +25,11 @@ namespace MyWebApp.Models
             return UsersList.Find(item => item.Id == id);
         }
 
+        private static int GenerateId()
+        {
+            return Math.Abs(Guid.NewGuid().GetHashCode());
+        }
+
         public static User FindByUsername(string username)
         {
             return UsersList.Find(item => String.Equals(item.Username,username));
@@ -54,9 +59,18 @@ namespace MyWebApp.Models
             SaveUsers();
         }
 
-        private static int GenerateId()
+        public static List<User> FindEligibleTrainers()
         {
-            return Math.Abs(Guid.NewGuid().GetHashCode());
+            return UsersList.FindAll(item => (item.UserType == EUserType.POSETILAC) && item.VisitingGroupTrainings.Count == 0);
+        }
+
+        public static void RegisterTrainer(User newTrainer, FitnessCenter fc)
+        {
+            newTrainer.UserType = EUserType.TRENER;
+            newTrainer.TrainingGroupTrainings = new List<GroupTraining>();
+            newTrainer.FitnessCenterTrainer = new FitnessCenter(fc);
+            SaveUsers();
+            SaveFitnessCenterTrainer();
         }
 
         public static void LoadInitialUsers()
@@ -105,6 +119,21 @@ namespace MyWebApp.Models
                     string text = gt.Id + ";" + u.Id;
                     sw.WriteLine(text);
                 }
+            }
+            sw.Close();
+        }
+
+        public static void SaveFitnessCenterTrainer()
+        {
+            StreamWriter sw = new StreamWriter(FitnessCenterTrainerFilePath);
+            foreach (User u in UsersList)
+            {
+                if (u.UserType != EUserType.TRENER)
+                {
+                    continue;
+                }
+                string text = u.FitnessCenterTrainer.Id + ";" + u.Id;
+                sw.WriteLine(text);
             }
             sw.Close();
         }

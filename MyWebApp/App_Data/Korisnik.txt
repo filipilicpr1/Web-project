@@ -13,4 +13,5 @@
 2117130570;zhang;xena;John;Cena;Muski;xi@ji.pi;01/04/1980;POSETILAC
 1448330741;nub;bot22;Bot;Avav;Drugo;bot@bot.bot;01/06/2021;POSETILAC
 96543;admin;admin;Admin;Admin;Drugo;admin@admin.com;01/01/2011;VLASNIK
-1393877637;sugasean;sean123;Sean;Omalley;Muski;suga@sean.com;13/11/1985;POSETILAC
+1393877637;sugasean;sean123;Sean;Omalley;Muski;suga@sean.com;13/11/1985;TRENER
+1245396911;cr7;cristiano;Cristiano;Ronaldo;Muski;cr7@gmail.com;08/06/1974;TRENER

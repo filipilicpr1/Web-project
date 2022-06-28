@@ -8,6 +8,9 @@
 
     // sakrij polje za komentar, pa ako jeste posetilac onda ga pokazi
     $("#commentDiv").hide();
+    $("#showEligibleTrainersButton").hide();
+    $("#registerTrainerDiv").hide();
+
     GetUser();
 
     // dobavljamo korisnika ako je ulogovan, jer onda generisemo odredjen sadrzaj za njega
@@ -23,6 +26,10 @@
 
                 if (userIsVisitor) {
                     $("#commentDiv").show();
+                }
+
+                if (userIsOwner) {
+                    $("#showEligibleTrainersButton").show();
                 }
             });
         } else {
@@ -171,7 +178,9 @@
                     alert(data.responseJSON);
                 });
             });
-        });
+        }).fail(function (data) {
+            alert(data.responseJSON);
+        });;
     }
 
     $("#sendCommentButton").click(function () {
@@ -212,4 +221,41 @@
         text += `<button class='approveButton' name='${comment.Id}'>Odobri</button>&nbsp;<button class='approveButton' name='${comment.Id}'>Odbij</button>`;
         return text;
     }
+
+    $("#showEligibleTrainersButton").click(function () {
+        if ($("#showEligibleTrainersButton").text() == "Sakrij") {
+            $("#registerTrainerDiv").hide();
+            $("#showEligibleTrainersButton").text("Registruj trenera");
+            return;
+        }
+        GenerateEligibleTrainers();
+        $("#registerTrainerDiv").show();
+        $("#showEligibleTrainersButton").text("Sakrij");
+    });
+
+    function GenerateEligibleTrainers() {
+        $("#eligibleTrainers").empty();
+        $.get("/api/users/eligibletrainers",  function (data, status) {
+            for (user in data) {
+                $("#eligibleTrainers").append(`<option value='${data[user].Id}'>${data[user].Username}</option>`);
+            }
+        }).fail(function (data) {
+            alert(data.responseJSON);
+        });;
+    }
+
+    $("#submitTrainerButton").click(function () {
+        let chosenUserId = $("#eligibleTrainers").val();
+        $.ajax("/api/users/registertrainer", {
+            method: 'PUT',
+            data: { 'userId' : chosenUserId, 'fitnessCenterId' : id },
+            success: function (result) {
+                alert(result);
+                $("#showEligibleTrainersButton").trigger('click');
+            }
+        }).fail(function (data) {
+            alert(data.responseJSON);
+        });
+    });
+
 })

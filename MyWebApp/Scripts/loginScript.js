@@ -133,7 +133,7 @@
             }
 
         }).fail(function (data) {
-            alert(data.responseJSON.Message);
+            alert(data.responseJSON);
         });
     }
 

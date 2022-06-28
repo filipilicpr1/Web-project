@@ -58,6 +58,8 @@
 
             GenerateGroupTrainingsTable();
             GenerateCommentsTable();
+        }).fail(function (data) {
+            alert(data.responseJSON);
         });
     }
 
@@ -97,9 +99,11 @@
                         GenerateGroupTrainingsTable();
                     }
                 }).fail(function (data) {
-                    alert(data.responseJSON.Message);
+                    alert(data.responseJSON);
                 });
             });
+        }).fail(function (data) {
+            alert(data.responseJSON);
         });
     }
 
@@ -164,7 +168,7 @@
                         GenerateCommentsTable();
                     }
                 }).fail(function (data) {
-                    alert(data.responseJSON.Message);
+                    alert(data.responseJSON);
                 });
             });
         });
@@ -189,7 +193,7 @@
                 $("#commentRating").val("1");
             }
         ).fail(function (data) {
-            alert(data.responseJSON.Message);
+            alert(data.responseJSON);
         });
     });
 

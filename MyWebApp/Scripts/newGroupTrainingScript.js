@@ -132,7 +132,7 @@
                     GenerateGroupTrainingTable();
                 }
             }).fail(function (data) {
-                alert(data.responseJSON.Message);
+                alert(data.responseJSON);
             });
         }
     }
@@ -171,6 +171,23 @@
                     GenerateEditTrainingTableFields();
                 }
             });
+
+            $(".deleteTrainingButton").click(function (event) {
+                if ($("#showNewTrainingTableButton").text() == "Sakrij") {
+                    $("#showNewTrainingTableButton").trigger('click');
+                }
+                $.ajax(`/api/grouptrainings/${event.target.name}`, {
+                    method: 'DELETE',
+                    success: function (result) {
+                        alert(result);
+                        GenerateGroupTrainingTable();
+                    }
+                }).fail(function (data) {
+                    alert(data.responseJSON);
+                });
+            });
+        }).fail(function (data) {
+            alert(data.responseJSON);
         });
     }
 
@@ -222,11 +239,13 @@
             isTrainingHourValid = true;
             isTrainingMinuteValid = true;
             isTrainingDateValid = true;
+        }).fail(function (data) {
+            alert(data.responseJSON);
         });
     }
 
     $("#trainingName").focusout(function () {
-        let name = $("#trainingName").val();
+        let name = $("#trainingName").val().trim();
         let nameReg = /^[A-Za-z0-9 ]{3,20}$/;
         let capitalReg = /[A-Z]/
         if (!capitalReg.test(name[0])) {
@@ -257,7 +276,7 @@
     });
     
     $("#trainingType").focusout(function () {
-        let type = $("#trainingType").val();
+        let type = $("#trainingType").val().trim();
         let typeReg = /^[A-Za-z0-9 ]{3,20}$/;
         if (!typeReg.test(type)) {
             isTrainingTypeValid = false;
@@ -376,8 +395,8 @@
             return;
         }
         $("#invalidTrainingDate").html("");
-        let name = $("#trainingName").val();
-        let type = $("#trainingType").val();
+        let name = $("#trainingName").val().trim();
+        let type = $("#trainingType").val().trim();
         let duration = $("#trainingDuration").val();
         let capacity = $("#trainingCapacity").val();
         $.post('/api/grouptrainings', {'name' : name, 'trainingType' : type, 'duration' : duration, 'dateOfTraining' : date.toISOString(), 'visitorCapacity' : capacity},
@@ -389,7 +408,7 @@
                 GenerateGroupTrainingTable();
             }
         ).fail(function (data) {
-            alert(data.responseJSON.Message);
+            alert(data.responseJSON);
         });
     });
 
@@ -410,8 +429,8 @@
             return;
         }
         $("#invalidTrainingDate").html("");
-        let name = $("#trainingName").val();
-        let type = $("#trainingType").val();
+        let name = $("#trainingName").val().trim();
+        let type = $("#trainingType").val().trim();
         let duration = $("#trainingDuration").val();
         let capacity = $("#trainingCapacity").val();
         $.ajax("/api/grouptrainings", {
@@ -423,7 +442,7 @@
                 GenerateGroupTrainingTable();
             }
         }).fail(function (data) {
-            alert(data.responseJSON.Message);
+            alert(data.responseJSON);
         });
     });
 
@@ -521,6 +540,10 @@
         $("#trainingCapacity").val("");
         $("#trainingCapacity").css("border", "1px solid black");
         $("#invalidTrainingCapacity").html("");
+
+        $("#trainingYear").val("2022");
+        $("#trainingMonth").val("Januar");
+        GetOptionsForDay("2022", "Januar");
 
         $("#trainingHour").val("00");
         $("#trainingHour").css("border", "1px solid black");

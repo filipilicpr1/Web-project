@@ -363,7 +363,7 @@
                 $("#showRegisterTableButton").trigger('click');
             }
         ).fail(function (data) {
-            alert(data.responseJSON.Message);
+            alert(data.responseJSON);
         });
     });
 
@@ -391,7 +391,7 @@
                 $("#showEditTable").trigger('click');
             }
         }).fail(function (data) {
-            alert(data.responseJSON.Message);
+            alert(data.responseJSON);
         });
     });
 

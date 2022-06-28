@@ -11,23 +11,23 @@ namespace MyWebApp.Controllers
 {
     public class CommentsController : ApiController
     {
-        public Comment Get(int id)
+        public HttpResponseMessage Get(int id)
         {
-            return Comments.FindById(id);
+            return Request.CreateResponse(HttpStatusCode.OK, Comments.FindById(id));
         }
 
-        public List<Comment> GetByFitnessCenterId(int fitnessId)
+        public HttpResponseMessage GetByFitnessCenterId(int fitnessId)
         {
             CookieHeaderValue cookieRecv = Request.Headers.GetCookies("session-id").FirstOrDefault();
             bool userIsOwner = CheckIfUserIsOwner(cookieRecv, fitnessId);
             if (userIsOwner)
             {
-                return Comments.FindAllByFitnessCenterId(fitnessId);
+                return Request.CreateResponse(HttpStatusCode.OK, Comments.FindAllByFitnessCenterId(fitnessId));
             }
-            return Comments.FindAllVisibleByFitnessCenterId(fitnessId);
+            return Request.CreateResponse(HttpStatusCode.OK, Comments.FindAllVisibleByFitnessCenterId(fitnessId));
         }
 
-        public bool CheckIfUserIsOwner(CookieHeaderValue cookieRecv, int fitnessId)
+        private bool CheckIfUserIsOwner(CookieHeaderValue cookieRecv, int fitnessId)
         {
             string sessionId = "";
             if (cookieRecv == null)
@@ -57,7 +57,7 @@ namespace MyWebApp.Controllers
             return false;
         }
 
-        public IHttpActionResult Post(CommentDTO commentDTO)
+        public HttpResponseMessage Post(CommentDTO commentDTO)
         {
             string sessionId = "";
             CookieHeaderValue cookieRecv = Request.Headers.GetCookies("session-id").FirstOrDefault();
@@ -67,40 +67,40 @@ namespace MyWebApp.Controllers
             }
             if (sessionId == "")
             {
-                return BadRequest("Not logged in");
+                return Request.CreateResponse(HttpStatusCode.Unauthorized, "Not logged in");
             }
             User u = Users.FindById(int.Parse(sessionId));
             if(u.UserType != EUserType.POSETILAC)
             {
-                return BadRequest("Not authorized");
+                return Request.CreateResponse(HttpStatusCode.Forbidden, "Not authorized");
             }
 
             if(commentDTO.Text.Trim() == "")
             {
-                return BadRequest("Morate uneti komentar");
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Morate uneti komentar");
             }
             if (commentDTO.Text.Contains(";"))
             {
-                return BadRequest("Komentar ne sme da sadrzi specijalne znakove");
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Komentar ne sme da sadrzi specijalne znakove");
             }
 
             FitnessCenter fc = FitnessCenters.FindById(commentDTO.FitnessCenterId);
             Comment c = Comments.CreateComment(commentDTO.Text, commentDTO.Rating, u, fc);
             Comments.AddComment(c);
-            return Ok("Komentar poslat");
+            return Request.CreateResponse(HttpStatusCode.OK, "Komentar poslat");
         }
 
-        public IHttpActionResult Put(Comment comment)
+        public HttpResponseMessage Put(Comment comment)
         {
             Comment c = Comments.FindById(comment.Id);
             CookieHeaderValue cookieRecv = Request.Headers.GetCookies("session-id").FirstOrDefault();
             bool userIsOwner = CheckIfUserIsOwner(cookieRecv, c.RelatedFitnessCenter.Id);
             if (!userIsOwner)
             {
-                return BadRequest("Not authorized");
+                return Request.CreateResponse(HttpStatusCode.Forbidden, "Not authorized");
             }
             Comments.UpdateComment(comment);
-            return Ok("Komentar azuriran");
+            return Request.CreateResponse(HttpStatusCode.OK, "Komentar azuriran");
         }
 
     }

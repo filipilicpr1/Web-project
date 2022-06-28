@@ -28,7 +28,7 @@ namespace MyWebApp.Models
 
         public static List<GroupTraining> FindAllUpcomingByFitnessCenterId(int fitnessId)
         {
-            return GroupTrainingsList.FindAll(item => (item.FitnessCenterLocation.Id == fitnessId) && item.Upcoming);
+            return GroupTrainingsList.FindAll(item => (item.FitnessCenterLocation.Id == fitnessId) && item.Upcoming && !item.Deleted);
         }
 
         public static void RegisterUserForTraining(User u, GroupTraining gt)
@@ -47,7 +47,7 @@ namespace MyWebApp.Models
         public static List<GroupTraining> FindVisitedGroupTrainings(User u)
         {
             // mora ovako jer svaki grupni trening u VisitingGRoupTraining za FitnessCenterLocation ima null
-            var list = u.VisitingGroupTrainings.FindAll(item => !item.Upcoming);
+            var list = u.VisitingGroupTrainings.FindAll(item => !item.Upcoming && !item.Deleted);
             List<GroupTraining> retVal = new List<GroupTraining>();
             foreach (var item in list)
             {
@@ -58,7 +58,7 @@ namespace MyWebApp.Models
 
         public static List<GroupTraining> FindCompletedTrainingsByTrainer(User u)
         {
-            var list = u.TrainingGroupTrainings.FindAll(item => !item.Upcoming);
+            var list = u.TrainingGroupTrainings.FindAll(item => !item.Upcoming && !item.Deleted);
             List<GroupTraining> retVal = new List<GroupTraining>();
             foreach (var item in list)
             {
@@ -72,6 +72,10 @@ namespace MyWebApp.Models
             List<GroupTraining> retVal = new List<GroupTraining>();
             foreach (var item in u.TrainingGroupTrainings)
             {
+                if (item.Deleted)
+                {
+                    continue;
+                }
                 retVal.Add(GroupTrainings.FindById(item.Id));
             }
             return retVal;
@@ -81,6 +85,7 @@ namespace MyWebApp.Models
         {
             gt.Id = GenerateId();
             gt.Upcoming = true;
+            gt.Deleted = false;
             gt.VisitorCount = 0;
             gt.FitnessCenterLocation = new FitnessCenter(FitnessCenters.FindById(trainer.FitnessCenterTrainer.Id));
             GroupTrainingsList.Add(gt);
@@ -103,6 +108,20 @@ namespace MyWebApp.Models
             originalGt.VisitorCapacity = gt.VisitorCapacity;
             originalGt.DateOfTraining = gt.DateOfTraining;
             originalGt.Upcoming = CheckDate(originalGt.DateOfTraining);
+            SaveGroupTrainings();
+        }
+
+        public static void DeleteGroupTraining(GroupTraining gt, User u)
+        {
+            gt.Deleted = true;
+            foreach(var item in u.TrainingGroupTrainings)
+            {
+                if(item.Id == gt.Id)
+                {
+                    item.Deleted = true;
+                    break;
+                }
+            }
             SaveGroupTrainings();
         }
 
@@ -131,6 +150,7 @@ namespace MyWebApp.Models
             gt.Duration = int.Parse(values[3]);
             gt.DateOfTraining = DateTime.Parse(values[4]);
             gt.VisitorCapacity = int.Parse(values[5]);
+            gt.Deleted = bool.Parse(values[6]);
             return gt;
         }
 
@@ -259,7 +279,7 @@ namespace MyWebApp.Models
             StreamWriter sw = new StreamWriter(FilePath);
             foreach (GroupTraining gt in GroupTrainingsList)
             {
-                string text = gt.Id + ";" + gt.Name + ";" + gt.TrainingType + ";" + gt.Duration + ";" + gt.DateOfTraining.ToString("dd/MM/yyyy HH:mm") + ";" + gt.VisitorCapacity;
+                string text = gt.Id + ";" + gt.Name + ";" + gt.TrainingType + ";" + gt.Duration + ";" + gt.DateOfTraining.ToString("dd/MM/yyyy HH:mm") + ";" + gt.VisitorCapacity + ";" + gt.Deleted;
                 sw.WriteLine(text);
             }
             sw.Close();

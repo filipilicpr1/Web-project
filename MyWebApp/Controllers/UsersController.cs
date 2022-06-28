@@ -12,27 +12,28 @@ namespace MyWebApp.Controllers
 {
     public class UsersController : ApiController
     {
-        public User Get(int id)
+        public HttpResponseMessage Get(int id)
         {
-            return Users.FindById(id);
+            return Request.CreateResponse(HttpStatusCode.OK, Users.FindById(id));
         }
 
-        public IHttpActionResult Post(User user)
+        public HttpResponseMessage Post(User user)
         {
             string errorMessage = "";
             bool update = false;
-            bool isUserValid = ValidateUser(user, out errorMessage, update);
+            HttpStatusCode code;
+            bool isUserValid = ValidateUser(user, out errorMessage, out code, update);
             if (!isUserValid)
             {
-                return BadRequest(errorMessage);
+                return Request.CreateResponse(code, errorMessage);
             }
             user.UserType = EUserType.POSETILAC;
             user.VisitingGroupTrainings = new List<GroupTraining>();
             Users.AddUser(user);
-            return Ok("Korisnik uspesno registrovan");
+            return Request.CreateResponse(HttpStatusCode.OK, "Korisnik uspesno registrovan");
         }
 
-        public IHttpActionResult Put(User user)
+        public HttpResponseMessage Put(User user)
         {
             string sessionId = "";
             CookieHeaderValue cookieRecv = Request.Headers.GetCookies("session-id").FirstOrDefault();
@@ -40,26 +41,31 @@ namespace MyWebApp.Controllers
             {
                 sessionId = cookieRecv["session-id"].Value;
             }
-            if (sessionId == "" || Users.FindById(int.Parse(sessionId)).Id != user.Id)
+            if (sessionId == "")
             {
-                return BadRequest("Not authorized");
+                return Request.CreateResponse(HttpStatusCode.Unauthorized, "Not logged in");
+            }
+            if(Users.FindById(int.Parse(sessionId)).Id != user.Id)
+            {
+                return Request.CreateResponse(HttpStatusCode.Forbidden, "Not authorized");
             }
             string errorMessage = "";
             bool update = true;
-            bool isUserValid = ValidateUser(user, out errorMessage, update);
+            HttpStatusCode code;
+            bool isUserValid = ValidateUser(user, out errorMessage, out code, update);
             if (!isUserValid)
             {
-                return BadRequest(errorMessage);
+                return Request.CreateResponse(code, errorMessage);
             }
             Users.UpdateUser(user);
-            return Ok("Korisnik uspesno izmenjen");
+            return Request.CreateResponse(HttpStatusCode.OK, "Korisnik uspesno izmenjen");
         }
 
         // update dodat jer se ista metoda koristi za validaciju i kod PUT, gde username moze da je isti
-        private bool ValidateUser(User user, out string errorMessage, bool update)
+        private bool ValidateUser(User user, out string errorMessage, out HttpStatusCode code, bool update)
         {
             errorMessage = "";
-
+            code = HttpStatusCode.BadRequest;
             if (user == null)
             {
                 errorMessage = "Greska prilikom prijema podataka";
@@ -111,6 +117,7 @@ namespace MyWebApp.Controllers
                 errorMessage = "Nevalidno prezime";
                 return false;
             }
+            code = HttpStatusCode.OK;
             return true;
         }
 

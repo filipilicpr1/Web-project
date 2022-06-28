@@ -10,37 +10,35 @@ namespace MyWebApp.Controllers
 {
     public class FitnessCentersController : ApiController
     {
-        public List<FitnessCenter> Get()
+        public HttpResponseMessage Get()
         {
-            return FitnessCenters.FitnessCentersList;
+            return Request.CreateResponse(HttpStatusCode.OK, FitnessCenters.FitnessCentersList);
         }
 
         
         // pretragu radi tako da ime fitnes centra sadrzi ovo ime, isto i za adresu
-        public List<FitnessCenter> Get(string name, string address, int minYear, int maxYear)
+        public HttpResponseMessage Get(string name, string address, int minYear, int maxYear)
         {
             bool searchByName = !String.Equals(name, "noName");
             bool searchByAddress = !String.Equals(address, "noAddress");
 
             if (searchByAddress)
             {
-                return SearchByAddress(name, address, minYear, maxYear);
+                return Request.CreateResponse(HttpStatusCode.OK, SearchByAddress(name, address, minYear, maxYear));
             }
 
             if (searchByName)
             {
-                return SearchByName(name, minYear, maxYear);
+                return Request.CreateResponse(HttpStatusCode.OK, SearchByName(name, minYear, maxYear));
             }
-
-            return SearchByYear(minYear, maxYear);
-            
+            return Request.CreateResponse(HttpStatusCode.OK, SearchByYear(minYear, maxYear));
         }
 
-        public FitnessCenter Get(int id)
+        public HttpResponseMessage Get(int id)
         {
             //address = Uri.UnescapeDataString(address);
             //address = address.Replace("+", " ");
-            return FitnessCenters.FindById(id);
+            return Request.CreateResponse(HttpStatusCode.OK, FitnessCenters.FindById(id));
         }
 
         private List<FitnessCenter> SearchByAddress(string name, string address, int minYear, int maxYear)

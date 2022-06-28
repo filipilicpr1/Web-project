@@ -60,7 +60,7 @@
             }
 
         }).fail(function (data) {
-            alert(data.responseJSON.Message);
+            alert(data.responseJSON);
         });
     }
     // polja(forma) za korisnikove podatke su uvek sakrivena, bez obzira na userId
@@ -122,6 +122,8 @@
     // inicijalno popunjavanje tabele sa fitnes centrima pri ucitavanju stranice
     $.get("/api/fitnesscenters", function (data, status) {
         GenerateTableContent(data);
+    }).fail(function (data) {
+        alert(data.responseJSON);
     });
 
 
@@ -169,6 +171,8 @@
 
         $.get(`/api/fitnesscenters/${name}/${address}/${minYear}/${maxYear}`, function (data, status) {
             GenerateTableContent(data);
+        }).fail(function (data) {
+            alert(data.responseJSON);
         });
     });
 

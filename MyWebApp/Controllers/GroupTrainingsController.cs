@@ -12,67 +12,75 @@ namespace MyWebApp.Controllers
 {
     public class GroupTrainingsController : ApiController
     {
-        public GroupTraining Get(int id)
+        public HttpResponseMessage Get(int id)
         {
-            return GroupTrainings.FindById(id);
+            GroupTraining gt = GroupTrainings.FindById(id);
+            if(gt == null || gt.Deleted)
+            {
+                return Request.CreateResponse(HttpStatusCode.NotFound, "Trazeni grupni trening ne postoji");
+            }
+            return Request.CreateResponse(HttpStatusCode.OK, gt);
         }
 
-        public List<GroupTraining> GetByFitnessCenterId(int fitnessId)
+        public HttpResponseMessage GetByFitnessCenterId(int fitnessId)
         {
             // prvo update za svaki grupni trening da li je u buducnosti
             GroupTrainings.UpdateGroupTrainings();
-            return GroupTrainings.FindAllUpcomingByFitnessCenterId(fitnessId);
+            return Request.CreateResponse(HttpStatusCode.OK, GroupTrainings.FindAllUpcomingByFitnessCenterId(fitnessId));
         }
 
-        public IHttpActionResult Post(GroupTraining groupTraining)
+        public HttpResponseMessage Post(GroupTraining groupTraining)
         {
             CookieHeaderValue cookieRecv = Request.Headers.GetCookies("session-id").FirstOrDefault();
             User u = GetLoggedInUser(cookieRecv);
             if (u == null)
             {
-                return BadRequest("Not authorized");
+                return Request.CreateResponse(HttpStatusCode.Unauthorized, "Not logged in");
             }
             if (u.UserType != EUserType.TRENER)
             {
-                return BadRequest("Not authorized");
+                return Request.CreateResponse(HttpStatusCode.Forbidden, "Not authorized");
             }
             string errorMessage = "";
             bool update = false;
-            bool isGroupTrainingValid = ValidateGroupTraining(groupTraining, null, out errorMessage,update);   // null je user jer on treba za proveru u POST vec u PUT
+            HttpStatusCode code;
+            bool isGroupTrainingValid = ValidateGroupTraining(groupTraining, null, out errorMessage, out code, update);   // null je user jer on treba za proveru u POST vec u PUT
             if (!isGroupTrainingValid)
             {
-                return BadRequest(errorMessage);
+                return Request.CreateResponse(code, errorMessage);
             }
             GroupTrainings.AddGroupTraining(groupTraining, u);
-            return Ok("Grupni trening kreiran");
+            return Request.CreateResponse(HttpStatusCode.OK, "Grupni trening kreiran");
         }
         
-        public IHttpActionResult Put(GroupTraining groupTraining)
+        public HttpResponseMessage Put(GroupTraining groupTraining)
         {
             CookieHeaderValue cookieRecv = Request.Headers.GetCookies("session-id").FirstOrDefault();
             User u = GetLoggedInUser(cookieRecv);
             if (u == null)
             {
-                return BadRequest("Not authorized");
+                return Request.CreateResponse(HttpStatusCode.Unauthorized, "Not logged in");
             }
             if (u.UserType != EUserType.TRENER)
             {
-                return BadRequest("Not authorized");
+                return Request.CreateResponse(HttpStatusCode.Forbidden, "Not authorized");
             }
             string errorMessage = "";
             bool update = true;
-            bool isGroupTrainingValid = ValidateGroupTraining(groupTraining, u, out errorMessage, update);
+            HttpStatusCode code;
+            bool isGroupTrainingValid = ValidateGroupTraining(groupTraining, u, out errorMessage, out code, update);
             if (!isGroupTrainingValid)
             {
-                return BadRequest(errorMessage);
+                return Request.CreateResponse(code, errorMessage);
             }
             GroupTrainings.UpdateGroupTraining(groupTraining);
-            return Ok("Grupni trening izmenjen");
+            return Request.CreateResponse(HttpStatusCode.OK, "Grupni trening izmenjen");
         }
 
-        private bool ValidateGroupTraining(GroupTraining gt, User u, out string errorMessage, bool update)
+        private bool ValidateGroupTraining(GroupTraining gt, User u, out string errorMessage, out HttpStatusCode code, bool update)
         {
             errorMessage = "";
+            code = HttpStatusCode.BadRequest;
             var reg = @"^[a-zA-Z0-9 ]{3,20}$";
             if (!Regex.IsMatch(gt.Name, reg))
             {
@@ -103,11 +111,18 @@ namespace MyWebApp.Controllers
 
             if (!update)
             {
+                code = HttpStatusCode.OK;
                 return true;
             }
 
             GroupTraining originalGt = GroupTrainings.FindById(gt.Id);
 
+            if (originalGt.Deleted)
+            {
+                code = HttpStatusCode.NotFound;
+                errorMessage = "Trening ne postoji";
+                return false;
+            }
             if (!originalGt.Upcoming)
             {
                 errorMessage = "Nije moguce menjati vec odrzane treninge";
@@ -120,14 +135,17 @@ namespace MyWebApp.Controllers
             }
             if(originalGt.FitnessCenterLocation.Id != u.FitnessCenterTrainer.Id)
             {
+                code = HttpStatusCode.Forbidden;
                 errorMessage = "Ne radite u fitnes centru u kojem se odrzava trening";
                 return false;
             }
             if (!CheckIfUserIsTrainerOnGroupTraining(u,originalGt))
             {
+                code = HttpStatusCode.Forbidden;
                 errorMessage = "Niste trener na tom treningu";
                 return false;
             }
+            code = HttpStatusCode.OK;
             return true;
         }
 
@@ -135,7 +153,7 @@ namespace MyWebApp.Controllers
         {
             foreach(var item in u.TrainingGroupTrainings)
             {
-                if(item.Id == gt.Id)
+                if((item.Id == gt.Id) && !item.Deleted)
                 {
                     return true;
                 }
@@ -143,10 +161,77 @@ namespace MyWebApp.Controllers
             return false;
         }
 
+        public HttpResponseMessage Delete(int id)
+        {
+            GroupTrainings.UpdateGroupTrainings();
+            CookieHeaderValue cookieRecv = Request.Headers.GetCookies("session-id").FirstOrDefault();
+            User u = GetLoggedInUser(cookieRecv);
+            GroupTraining gt = GroupTrainings.FindById(id);
+            string errorMessage;
+            HttpStatusCode code;
+            bool isGroupTrainingValid = ValidateDeleteGroupTraining(gt, u, out errorMessage, out code);
+            if (!isGroupTrainingValid)
+            {
+                return Request.CreateResponse(code, errorMessage);
+            }
+            GroupTrainings.DeleteGroupTraining(gt, u);
+            return Request.CreateResponse(HttpStatusCode.OK, "Grupni trening obrisan");
+        }
+
+        private bool ValidateDeleteGroupTraining(GroupTraining gt, User u, out string errorMessage, out HttpStatusCode code)
+        {
+            errorMessage = "";
+            code = HttpStatusCode.BadRequest;
+            if(u == null)
+            {
+                code = HttpStatusCode.Unauthorized;
+                errorMessage = "Not logged in";
+                return false;
+            }
+            if(u.UserType != EUserType.TRENER)
+            {
+                code = HttpStatusCode.Forbidden;
+                errorMessage = "Not authorized";
+                return false;
+            }
+            bool userIsTrainer = CheckIfUserIsTrainerOnGroupTraining(u, gt);
+            if(!userIsTrainer)
+            {
+                // ako korisnik nije trener na tom treningu
+                code = HttpStatusCode.Forbidden;
+                errorMessage = "Not authorized";
+                return false;
+            }
+            if (!gt.Upcoming)
+            {
+                errorMessage = "Ne mozete brisati vec odrzan trening";
+                return false;
+            }
+            if (gt.Deleted)
+            {
+                code = HttpStatusCode.NotFound;
+                errorMessage = "Trening ne postoji";
+                return false;
+            }
+            if(gt.VisitorCount > 0)
+            {
+                errorMessage = "Ne mozete brisati trening ukoliko ima vec prijavljenih posetilaca";
+                return false;
+            }
+            if (gt.FitnessCenterLocation.Id != u.FitnessCenterTrainer.Id)
+            {
+                code = HttpStatusCode.Forbidden;
+                errorMessage = "Ne radite u fitnes centru u kojem se odrzava trening";
+                return false;
+            }
+            code = HttpStatusCode.OK;
+            return true;
+        }
+
         [Route("api/grouptrainings/apply")]
         [HttpPut]
         [AllowAnonymous]
-        public IHttpActionResult ApplyForTraining(GroupTraining groupTraining)
+        public HttpResponseMessage ApplyForTraining(GroupTraining groupTraining)
         {
             GroupTrainings.UpdateGroupTrainings();
             string sessionId = "";
@@ -157,31 +242,35 @@ namespace MyWebApp.Controllers
             }
             if(sessionId == "")
             {
-                return BadRequest("Not logged in");
+                return Request.CreateResponse(HttpStatusCode.Unauthorized, "Not logged in");
             }
             User u = Users.FindById(int.Parse(sessionId));
             GroupTraining gt = GroupTrainings.FindById(groupTraining.Id);
             string errorMessage;
-            bool isApplicationValid = ValidateApplicationForTraining(u, gt, out errorMessage);
+            HttpStatusCode code;
+            bool isApplicationValid = ValidateApplicationForTraining(u, gt, out errorMessage, out code);
             if (!isApplicationValid)
             {
-                return BadRequest(errorMessage);
+                return Request.CreateResponse(code, errorMessage);
             }
             GroupTrainings.RegisterUserForTraining(u, gt);
-            return Ok("Prijavili ste se na trening");
+            return Request.CreateResponse(HttpStatusCode.OK, "Prijavili ste se na trening");
         }
 
-        private bool ValidateApplicationForTraining(User u, GroupTraining gt, out string errorMessage)
+        private bool ValidateApplicationForTraining(User u, GroupTraining gt, out string errorMessage, out HttpStatusCode code)
         {
             errorMessage = "";
+            code = HttpStatusCode.BadRequest;
             if (u == null)
             {
-                errorMessage = "Invalid user";
+                code = HttpStatusCode.Unauthorized;
+                errorMessage = "Not logged in";
                 return false;
             }
 
             if (u.UserType != EUserType.POSETILAC)
             {
+                code = HttpStatusCode.Forbidden;
                 errorMessage = "Not authorized";
                 return false;
             }
@@ -189,6 +278,13 @@ namespace MyWebApp.Controllers
             if (gt == null)
             {
                 errorMessage = "Invalid group training";
+                return false;
+            }
+
+            if (gt.Deleted)
+            {
+                code = HttpStatusCode.NotFound;
+                errorMessage = "Group training doesnt exist";
                 return false;
             }
 
@@ -209,13 +305,14 @@ namespace MyWebApp.Controllers
                 errorMessage = "That training has already happened";
                 return false;
             }
+            code = HttpStatusCode.OK;
             return true;
         }
 
         [Route("api/grouptrainings/trainedtrainings")]
         [HttpGet]
         [AllowAnonymous]
-        public List<GroupTraining> GetAllTrainedGroupTrainings()
+        public HttpResponseMessage GetAllTrainedGroupTrainings()
         {
             GroupTrainings.UpdateGroupTrainings();
             // provera da li je korisnik ulogovan
@@ -224,19 +321,19 @@ namespace MyWebApp.Controllers
             User u = GetLoggedInUser(cookieRecv);
             if (u == null)
             {
-                return null;
+                return Request.CreateResponse(HttpStatusCode.Unauthorized, "Not logged in");
             }
             if (u.UserType != EUserType.TRENER)
             {
-                return null;
+                return Request.CreateResponse(HttpStatusCode.Forbidden, "Not authorized");
             }
-            return GroupTrainings.FindAllTrainingsByTrainer(u);
+            return Request.CreateResponse(HttpStatusCode.OK, GroupTrainings.FindAllTrainingsByTrainer(u));
         }
 
         [Route("api/grouptrainings/visitedtrainings")]
         [HttpGet]
         [AllowAnonymous]
-        public List<GroupTraining> GetVisitedTrainings()
+        public HttpResponseMessage GetVisitedTrainings()
         {
             GroupTrainings.UpdateGroupTrainings();
             // provera da li je korisnik ulogovan
@@ -245,16 +342,16 @@ namespace MyWebApp.Controllers
             User u = GetLoggedInUser(cookieRecv);
             if(u == null)
             {
-                return null;
+                return Request.CreateResponse(HttpStatusCode.Unauthorized, "Not logged in");
             }
             if (u.UserType != EUserType.POSETILAC)
             {
-                return null;
+                return Request.CreateResponse(HttpStatusCode.Forbidden, "Not authorized");
             }
-            return GroupTrainings.FindVisitedGroupTrainings(u);
+            return Request.CreateResponse(HttpStatusCode.OK, GroupTrainings.FindVisitedGroupTrainings(u));
         }
 
-        public List<GroupTraining> Get(string fitnessCenter, string name, string trainingType)
+        public HttpResponseMessage Get(string fitnessCenter, string name, string trainingType)
         {
             // provera da li je korisnik ulogovan
             // ako nije vrati null, ako jeste vrati tog korisnika
@@ -262,20 +359,20 @@ namespace MyWebApp.Controllers
             User u = GetLoggedInUser(cookieRecv);
             if (u == null)
             {
-                return null;
+                return Request.CreateResponse(HttpStatusCode.Unauthorized, "Not logged in");
             }
             if (u.UserType != EUserType.POSETILAC)
             {
-                return null;
+                return Request.CreateResponse(HttpStatusCode.Forbidden, "Not authorized");
             }
-            return SearchVisitedTrainings(name, trainingType, fitnessCenter, u);
+            return Request.CreateResponse(HttpStatusCode.OK, SearchVisitedTrainings(name, trainingType, fitnessCenter, u));
         }
 
 
         [Route("api/grouptrainings/completedtrainings")]
         [HttpGet]
         [AllowAnonymous]
-        public List<GroupTraining> GetCompletedTrainings()
+        public HttpResponseMessage GetCompletedTrainings()
         {
             GroupTrainings.UpdateGroupTrainings();
             // provera da li je korisnik ulogovan
@@ -284,35 +381,35 @@ namespace MyWebApp.Controllers
             User u = GetLoggedInUser(cookieRecv);
             if (u == null)
             {
-                return null;
+                return Request.CreateResponse(HttpStatusCode.Unauthorized, "Not logged in");
             }
             if (u.UserType != EUserType.TRENER)
             {
-                return null;
+                return Request.CreateResponse(HttpStatusCode.Forbidden, "Not authorized");
             }
-            return GroupTrainings.FindCompletedTrainingsByTrainer(u);
+            return Request.CreateResponse(HttpStatusCode.OK, GroupTrainings.FindCompletedTrainingsByTrainer(u));
         }
 
         [Route("api/grouptrainings/trainersearch")]
         [HttpGet]
         [AllowAnonymous]
-        public List<GroupTraining> GetTrainerSearch([FromUri]GroupTrainingSearchDTO groupTrainingSearchDTO)
+        public HttpResponseMessage GetTrainerSearch([FromUri]GroupTrainingSearchDTO groupTrainingSearchDTO)
         {
             GroupTrainings.UpdateGroupTrainings();
             CookieHeaderValue cookieRecv = Request.Headers.GetCookies("session-id").FirstOrDefault();
             User u = GetLoggedInUser(cookieRecv);
             if (u == null)
             {
-                return null;
+                return Request.CreateResponse(HttpStatusCode.Unauthorized, "Not logged in");
             }
             if (u.UserType != EUserType.TRENER)
             {
-                return null;
+                return Request.CreateResponse(HttpStatusCode.Forbidden, "Not authorized");
             }
-            return SearchCompletedTrainings(groupTrainingSearchDTO.Name, groupTrainingSearchDTO.TrainingType, groupTrainingSearchDTO.MinDate, groupTrainingSearchDTO.MaxDate,u);
+            return Request.CreateResponse(HttpStatusCode.OK, SearchCompletedTrainings(groupTrainingSearchDTO.Name, groupTrainingSearchDTO.TrainingType, groupTrainingSearchDTO.MinDate, groupTrainingSearchDTO.MaxDate, u));
         }
 
-        public User GetLoggedInUser(CookieHeaderValue cookieRecv)
+        private User GetLoggedInUser(CookieHeaderValue cookieRecv)
         {
             string sessionId = "";
             if (cookieRecv == null)

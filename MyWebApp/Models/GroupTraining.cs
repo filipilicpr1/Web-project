@@ -17,6 +17,7 @@ namespace MyWebApp.Models
         public List<User> Visitors { get; set; }
         public int VisitorCount { get; set; }
         public bool Upcoming { get; set; }
+        public bool Deleted { get; set; }
 
         public GroupTraining()
         {
@@ -32,6 +33,7 @@ namespace MyWebApp.Models
             this.VisitorCapacity = gt.VisitorCapacity;
             this.VisitorCount = gt.VisitorCount;
             this.Upcoming = gt.Upcoming;
+            this.Deleted = gt.Deleted;
         }
     }
 }

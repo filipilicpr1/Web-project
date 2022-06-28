@@ -8,3 +8,5 @@
 875418138;a ovde;4;False;True
 516082451;Kmentar x;5;False;False
 201280009;anatham pham;2;True;True
+2112144979;Nouvelle comment;4;False;False
+569071142;Lose;1;False;False

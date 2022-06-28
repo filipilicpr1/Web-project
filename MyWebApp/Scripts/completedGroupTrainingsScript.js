@@ -178,9 +178,12 @@
                     $("#trainingPretraga").show();
                     $("#trainingTableDiv").html("");
                 }
+                if (path == "") {
+                    return;
+                }
                 GetData(path);
             }).fail(function (data) {
-                alert(data.responseJSON.Message);
+                alert(data.responseJSON);
             });
         }
     }
@@ -200,6 +203,8 @@
                 return;
             }
             GenerateTableContent(data);
+        }).fail(function (data) {
+            alert(data.responseJSON);
         });
     }
     
@@ -229,6 +234,8 @@
                 return;
             }
             GenerateTableContent(data);
+        }).fail(function (data) {
+            alert(data.responseJSON);
         });
     });
 
@@ -269,6 +276,8 @@
                 return;
             }
             GenerateTableContent(data);
+        }).fail(function (data) {
+            alert(data.responseJSON);
         });
     });
 

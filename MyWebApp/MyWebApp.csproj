@@ -202,6 +202,7 @@
     <Content Include="Scripts\indexScript.js" />
     <Content Include="Scripts\loginScript.js" />
     <Content Include="Scripts\newGroupTrainingScript.js" />
+    <Content Include="Scripts\ownedFitnessCentersScript.js" />
     <Content Include="Scripts\registerScript.js" />
     <Content Include="Scripts\completedGroupTrainingsScript.js" />
     <Content Include="Static\fitnessCenterDetails.html" />
@@ -235,6 +236,7 @@
     <Content Include="Scripts\modernizr-2.8.3.js" />
     <Content Include="Static\completedGroupTrainings.html" />
     <Content Include="Static\newGroupTraining.html" />
+    <Content Include="Static\ownedFitnessCenters.html" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

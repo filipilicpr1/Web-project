@@ -102,7 +102,7 @@ namespace MyWebApp.Controllers
                 return false;
             }
 
-            var nameReg = @"^[a-zA-Z]{3,16}$";
+            var nameReg = @"^[A-Z][a-zA-Z]{2,15}$";
 
             if (!Regex.IsMatch(user.Name, nameReg))
             {
@@ -110,7 +110,7 @@ namespace MyWebApp.Controllers
                 return false;
             }
 
-            var lastNameReg = @"^[a-zA-Z]{3,20}$";
+            var lastNameReg = @"^[A-Z][a-zA-Z]{2,15}$";
 
             if (!Regex.IsMatch(user.LastName, lastNameReg))
             {

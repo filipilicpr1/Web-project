@@ -10,12 +10,13 @@
     var user = null;
     var userIsVisitor = false;
     var userIsTrainer = false;
-    
+    var userIsOwner = false;
 
 
     // sakrijemo sve linkove na pocetku, i onda prikazemo one koje treba
     $("#visitedGroupTrainingsLink").hide();
     $("#newGroupTrainingLink").hide();
+    $("#ownedFitnessCentersLink").hide();
     // prikaz odredjenog sadrzaja u zavisnosti od toga da li je korsnik ulogovan ili ne
     if (userId == null || userId == "") {
         // ako nije ulogovan
@@ -49,6 +50,7 @@
             // dobavimo usera, pa odredimo koji je tip 
             userIsVisitor = userType[data.UserType] == "POSETILAC"; // za sad se generise samo sadrzaj za posetioca
             userIsTrainer = userType[data.UserType] == "TRENER";
+            userIsOwner = userType[data.UserType] == "VLASNIK";
             // u zavisnosti od tipa prikazemo odredjene linkove
             if (userIsVisitor) {
                 $("#visitedGroupTrainingsLink").show();
@@ -57,6 +59,10 @@
             if (userIsTrainer) {
                 $("#visitedGroupTrainingsLink").show();
                 $("#newGroupTrainingLink").show();
+            }
+
+            if (userIsOwner) {
+                $("#ownedFitnessCentersLink").show();
             }
 
         }).fail(function (data) {

@@ -26,6 +26,11 @@ namespace MyWebApp.Controllers
         {
             // prvo update za svaki grupni trening da li je u buducnosti
             GroupTrainings.UpdateGroupTrainings();
+            FitnessCenter fc = FitnessCenters.FindById(fitnessId);
+            if (fc == null || fc.Deleted)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Fitnes centar ne postoji");
+            }
             return Request.CreateResponse(HttpStatusCode.OK, GroupTrainings.FindAllUpcomingByFitnessCenterId(fitnessId));
         }
 
@@ -81,7 +86,7 @@ namespace MyWebApp.Controllers
         {
             errorMessage = "";
             code = HttpStatusCode.BadRequest;
-            var reg = @"^[a-zA-Z0-9 ]{3,20}$";
+            var reg = @"^[A-Z][a-zA-Z0-9 ]{2,19}$";
             if (!Regex.IsMatch(gt.Name, reg))
             {
                 errorMessage = "Nevalidan naziv treninga";
@@ -131,6 +136,11 @@ namespace MyWebApp.Controllers
             if(gt.VisitorCapacity < originalGt.VisitorCount)
             {
                 errorMessage = "Nije moguce zadati manji kapacitet od prijavljenog broja posetioca";
+                return false;
+            }
+            if (originalGt.FitnessCenterLocation.Deleted)
+            {
+                errorMessage = "Fitnes centar ne postoji";
                 return false;
             }
             if(originalGt.FitnessCenterLocation.Id != u.FitnessCenterTrainer.Id)
@@ -218,6 +228,11 @@ namespace MyWebApp.Controllers
                 errorMessage = "Ne mozete brisati trening ukoliko ima vec prijavljenih posetilaca";
                 return false;
             }
+            if (gt.FitnessCenterLocation.Deleted)
+            {
+                errorMessage = "Fitnes centar ne postoji";
+                return false;
+            }
             if (gt.FitnessCenterLocation.Id != u.FitnessCenterTrainer.Id)
             {
                 code = HttpStatusCode.Forbidden;
@@ -303,6 +318,11 @@ namespace MyWebApp.Controllers
             if (!gt.Upcoming)
             {
                 errorMessage = "That training has already happened";
+                return false;
+            }
+            if (gt.FitnessCenterLocation.Deleted)
+            {
+                errorMessage = "Fitnes centar ne postoji";
                 return false;
             }
             code = HttpStatusCode.OK;

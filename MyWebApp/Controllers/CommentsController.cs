@@ -19,6 +19,10 @@ namespace MyWebApp.Controllers
         public HttpResponseMessage GetByFitnessCenterId(int fitnessId)
         {
             CookieHeaderValue cookieRecv = Request.Headers.GetCookies("session-id").FirstOrDefault();
+            if (FitnessCenters.FindById(fitnessId).Deleted)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Taj fitnes centar ne postoji");
+            }
             bool userIsOwner = CheckIfUserIsOwner(cookieRecv, fitnessId);
             if (userIsOwner)
             {
@@ -48,7 +52,7 @@ namespace MyWebApp.Controllers
 
             foreach(var fc in u.FitnessCentersOwned)
             {
-                if(fc.Id == fitnessId)
+                if((fc.Id == fitnessId) && !fc.Deleted)
                 {
                     return true;
                 }
@@ -85,6 +89,10 @@ namespace MyWebApp.Controllers
             }
 
             FitnessCenter fc = FitnessCenters.FindById(commentDTO.FitnessCenterId);
+            if (fc.Deleted)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Fitnes centar ne postoji");
+            }
             Comment c = Comments.CreateComment(commentDTO.Text, commentDTO.Rating, u, fc);
             Comments.AddComment(c);
             return Request.CreateResponse(HttpStatusCode.OK, "Komentar poslat");

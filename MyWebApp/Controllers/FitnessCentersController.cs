@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text.RegularExpressions;
 using System.Web.Http;
 
 namespace MyWebApp.Controllers
@@ -12,7 +14,7 @@ namespace MyWebApp.Controllers
     {
         public HttpResponseMessage Get()
         {
-            return Request.CreateResponse(HttpStatusCode.OK, FitnessCenters.FitnessCentersList);
+            return Request.CreateResponse(HttpStatusCode.OK, FitnessCenters.FitnessCentersList.FindAll(item => !item.Deleted));
         }
 
         
@@ -38,7 +40,179 @@ namespace MyWebApp.Controllers
         {
             //address = Uri.UnescapeDataString(address);
             //address = address.Replace("+", " ");
-            return Request.CreateResponse(HttpStatusCode.OK, FitnessCenters.FindById(id));
+            FitnessCenter fc = FitnessCenters.FindById(id);
+            if(fc == null || fc.Deleted)
+            {
+                return Request.CreateResponse(HttpStatusCode.NotFound, "Fitnes centar ne postoji");
+            }
+            return Request.CreateResponse(HttpStatusCode.OK, fc);
+        }
+
+        [Route("api/fitnesscenters/getowned")]
+        [HttpGet]
+        [AllowAnonymous]
+        public HttpResponseMessage GetOwnedFitnessCenters()
+        {
+            CookieHeaderValue cookieRecv = Request.Headers.GetCookies("session-id").FirstOrDefault();
+            User u = GetLoggedInUser(cookieRecv);
+            if (u == null)
+            {
+                return Request.CreateResponse(HttpStatusCode.Unauthorized, "Not logged in");
+            }
+            if (u.UserType != EUserType.VLASNIK)
+            {
+                return Request.CreateResponse(HttpStatusCode.Forbidden, "Not authorized");
+            }
+            return Request.CreateResponse(HttpStatusCode.OK, FitnessCenters.FindAllOwned(u));
+        }
+
+        public HttpResponseMessage Post(FitnessCenter fitnessCenter)
+        {
+            CookieHeaderValue cookieRecv = Request.Headers.GetCookies("session-id").FirstOrDefault();
+            User u = GetLoggedInUser(cookieRecv);
+            if (u == null)
+            {
+                return Request.CreateResponse(HttpStatusCode.Unauthorized, "Not logged in");
+            }
+            if (u.UserType != EUserType.VLASNIK)
+            {
+                return Request.CreateResponse(HttpStatusCode.Forbidden, "Not authorized");
+            }
+            string errorMessage = "";
+            bool update = false;
+            HttpStatusCode code;
+            bool isFitnessCenterValid = ValidateFitnessCenter(fitnessCenter, null, out errorMessage, out code, update);   // null je user jer on treba za proveru u POST vec u PUT
+            if (!isFitnessCenterValid)
+            {
+                return Request.CreateResponse(code, errorMessage);
+            }
+            FitnessCenters.AddFitnessCenter(fitnessCenter, u);
+            return Request.CreateResponse(HttpStatusCode.OK, "Fitnes centar kreiran");
+        }
+
+        public HttpResponseMessage Put(FitnessCenter fitnessCenter)
+        {
+            CookieHeaderValue cookieRecv = Request.Headers.GetCookies("session-id").FirstOrDefault();
+            User u = GetLoggedInUser(cookieRecv);
+            if (u == null)
+            {
+                return Request.CreateResponse(HttpStatusCode.Unauthorized, "Not logged in");
+            }
+            if (u.UserType != EUserType.VLASNIK)
+            {
+                return Request.CreateResponse(HttpStatusCode.Forbidden, "Not authorized");
+            }
+            string errorMessage = "";
+            bool update = true;
+            HttpStatusCode code;
+            bool isFitnessCenterValid = ValidateFitnessCenter(fitnessCenter, u, out errorMessage, out code, update);
+            if (!isFitnessCenterValid)
+            {
+                return Request.CreateResponse(code, errorMessage);
+            }
+            FitnessCenters.UpdateFitnessCenter(fitnessCenter);
+            return Request.CreateResponse(HttpStatusCode.OK, "Fitnes centar izmenjen");
+        }
+
+        private User GetLoggedInUser(CookieHeaderValue cookieRecv)
+        {
+            string sessionId = "";
+            if (cookieRecv == null)
+            {
+                return null;
+            }
+            sessionId = cookieRecv["session-id"].Value;
+            if (sessionId == "")
+            {
+                return null;
+            }
+            return Users.FindById(int.Parse(sessionId));
+        }
+
+        private bool ValidateFitnessCenter(FitnessCenter fc, User u, out string errorMessage, out HttpStatusCode code, bool update)
+        {
+            errorMessage = "";
+            code = HttpStatusCode.BadRequest;
+            var reg = @"^[A-Z][a-zA-Z0-9 ]{2,19}$";
+            if (!Regex.IsMatch(fc.Name, reg))
+            {
+                errorMessage = "Nevalidan naziv fitnes centra";
+                return false;
+            }
+            string[] streetParts = fc.Address.Split(',')[0].Split(' ');
+            string street = "";
+            for(int i = 0; i < streetParts.Length -1; i++)
+            {
+                street += streetParts[i] + " ";
+            }
+            street = street.Trim();
+            int number = int.Parse(streetParts[streetParts.Length - 1]);
+            string place = fc.Address.Split(',')[1].Trim();
+            int zip = int.Parse(fc.Address.Split(',')[2].Trim());
+            if (!Regex.IsMatch(street, reg))
+            {
+                errorMessage = "Nevalidan naziv ulice";
+                return false;
+            }
+            if (!Regex.IsMatch(place, reg))
+            {
+                errorMessage = "Nevalidan naziv mesta";
+                return false;
+            }
+            if (number < 0 || number > 999)
+            {
+                errorMessage = "Nevalidno broj ulice";
+                return false;
+            }
+            if (zip < 10000 || zip > 99999)
+            {
+                errorMessage = "Nevalidan postanski broj";
+                return false;
+            }
+            if(fc.MonthlySubscription < 0 || fc.MonthlySubscription > 1000000)
+            {
+                errorMessage = "Nevalidna mesecna clanarina";
+                return false;
+            }
+            if (fc.YearlySubscription < 0 || fc.YearlySubscription > 1000000)
+            {
+                errorMessage = "Nevalidna godisnja clanarina";
+                return false;
+            }
+            if (fc.TrainingCost < 0 || fc.TrainingCost > 100000)
+            {
+                errorMessage = "Nevalidna cena treninga";
+                return false;
+            }
+            if (fc.GroupTrainingCost < 0 || fc.GroupTrainingCost > 100000)
+            {
+                errorMessage = "Nevalidna cena grupnog treninga";
+                return false;
+            }
+            if (fc.PersonalTrainingCost < 0 || fc.PersonalTrainingCost > 100000)
+            {
+                errorMessage = "Nevalidna cena personalnog treninga";
+                return false;
+            }
+            if (!update)
+            {
+                code = HttpStatusCode.OK;
+                return true;
+            }
+            FitnessCenter originalFc = FitnessCenters.FindById(fc.Id);
+            if (originalFc.Deleted)
+            {
+                errorMessage = "Fitnes centar ne postoji";
+                return false;
+            }
+            if(originalFc.Owner.Id != u.Id)
+            {
+                code = HttpStatusCode.Forbidden;
+                errorMessage = "Not authorized";
+                return false;
+            }
+            code = HttpStatusCode.OK;
+            return true;
         }
 
         private List<FitnessCenter> SearchByAddress(string name, string address, int minYear, int maxYear)
@@ -88,6 +262,10 @@ namespace MyWebApp.Controllers
             List<FitnessCenter> retVal = new List<FitnessCenter>();
             foreach (var fc in FitnessCenters.FitnessCentersList)
             {
+                if (fc.Deleted)
+                {
+                    continue;
+                }
                 if (fc.YearCreated >= minYear && fc.YearCreated <= maxYear)
                 {
                     retVal.Add(fc);

@@ -9,3 +9,4 @@
 397043507;Grupni trening 9;body pump;40;15/02/2023 15:30;7;True
 209324140;Grupni trening 10;yoga;60;27/07/2022 00:00;5;True
 169404704;Grupni trening 9;yoga;35;05/08/2022 10:00;8;False
+487712641;Grupni tren 10;asdf;34;01/11/2022 00:00;43;True

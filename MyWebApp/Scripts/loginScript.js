@@ -122,6 +122,7 @@
             // dobavimo usera, pa odredimo koji je tip 
             let userIsVisitor = userType[data.UserType] == "POSETILAC"; // za sad se generise samo sadrzaj za posetioca
             let userIsTrainer = userType[data.UserType] == "TRENER";
+            let userIsOwner = userType[data.UserType] == "VLASNIK";
             // u zavisnosti od tipa prikazemo odredjene linkove
             if (userIsVisitor) {
                 $("#visitedGroupTrainingsLink").show();
@@ -130,6 +131,10 @@
             if (userIsTrainer) {
                 $("#visitedGroupTrainingsLink").show();
                 $("#newGroupTrainingLink").show();
+            }
+
+            if (userIsOwner) {
+                $("#ownedFitnessCentersLink").show();
             }
 
         }).fail(function (data) {
@@ -163,6 +168,7 @@
         // sakrij sve linkove
         $("#visitedGroupTrainingsLink").hide();
         $("#newGroupTrainingLink").hide();
+        $("#ownedFitnessCentersLink").hide();
     }
     
     function EmptyLoginFields() {

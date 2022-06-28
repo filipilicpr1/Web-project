@@ -17,6 +17,7 @@ namespace MyWebApp.Models
         public int TrainingCost { get; set; }
         public int GroupTrainingCost { get; set; }
         public int PersonalTrainingCost { get; set; }
+        public bool Deleted { get; set; }
 
         public FitnessCenter() {}
 
@@ -31,6 +32,7 @@ namespace MyWebApp.Models
             this.TrainingCost = fc.TrainingCost;
             this.GroupTrainingCost = fc.GroupTrainingCost;
             this.PersonalTrainingCost = fc.PersonalTrainingCost;
+            this.Deleted = fc.Deleted;
         }
     }
 }

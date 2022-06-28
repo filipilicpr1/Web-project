@@ -1,0 +1,122 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script src="../Scripts/jquery-3.3.1.js"></script>
+    <script src="../Scripts/ownedFitnessCentersScript.js"></script>
+    <style>
+        caption {
+            font-size: 16px;
+            font-weight: bold;
+            color: darkblue;
+        }
+    </style>
+</head>
+<body>
+    <div id="fitnessCentersDiv">
+        <div id="fitnessCentersTableDiv">
+
+        </div>
+    </div>
+    <div id="inputFields">
+        <div>
+            <br/>
+            <button id="showNewFitnessCenterTableButton">Novi fitnes centar</button>
+        </div>
+        <br />
+        <div id="newFitnessCenterTable">
+            <table>
+                <tr>
+                    <td>Naziv :</td>
+                    <td><input type="text" id="fitnessCenterName" /></td>
+                    <td align="left">
+                        <font id="invalidFitnessCenterName"></font>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Ulica :</td>
+                    <td>
+                        <input type="text" id="fitnessCenterStreet" />
+                    </td>
+                    <td align="left">
+                        <font id="invalidFitnessCenterStreet"></font>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Broj :</td>
+                    <td>
+                        <input type="text" id="fitnessCenterNumber" />
+                    </td>
+                    <td align="left">
+                        <font id="invalidFitnessCenterNumber"></font>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Mesto :</td>
+                    <td><input type="text" id="fitnessCenterPlace" /></td>
+                    <td align="left">
+                        <font id="invalidFitnessCenterPlace"></font>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Postanski broj :</td>
+                    <td><input type="text" id="fitnessCenterZip" /></td>
+                    <td align="left">
+                        <font id="invalidFitnessCenterZip"></font>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Mesecna clanarina :</td>
+                    <td><input type="text" id="fitnessCenterMonthlySubscription" /></td>
+                    <td align="left">
+                        <font id="invalidFitnessCenterMonthlySubscription"></font>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Godisnja clanarina :</td>
+                    <td><input type="text" id="fitnessCenterYearlySubscription" /></td>
+                    <td align="left">
+                        <font id="invalidFitnessCenterYearlySubscription"></font>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Cena jednog treninga :</td>
+                    <td><input type="text" id="fitnessCenterTrainingCost" /></td>
+                    <td align="left">
+                        <font id="invalidFitnessCenterTrainingCost"></font>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Cena grupnog treninga :</td>
+                    <td><input type="text" id="fitnessCenterGroupTrainingCost" /></td>
+                    <td align="left">
+                        <font id="invalidFitnessCenterGroupTrainingCost"></font>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Cena licnog treninga :</td>
+                    <td><input type="text" id="fitnessCenterPersonalTrainingCost" /></td>
+                    <td align="left">
+                        <font id="invalidFitnessCenterPersonalTrainingCost"></font>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Godina otvaranja :</td>
+                    <td>
+                        <select id="fitnessCenterYear"></select>
+                    </td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>
+                        <button id="createFitnessCenterButton">Kreiraj</button>
+                        <button id="editFitnessCenterButton">Izmeni</button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <a href="index.html">Nazad</a>
+</body>
+</html>

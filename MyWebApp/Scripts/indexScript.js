@@ -12,6 +12,7 @@
     var userIsOwner = false;
 
 
+
     // sakrijemo sve linkove na pocetku, i onda prikazemo one koje treba
     $("#visitedGroupTrainingsLink").hide();
     $("#newGroupTrainingLink").hide();

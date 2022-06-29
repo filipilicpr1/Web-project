@@ -4,3 +4,4 @@
 473078892;Fitnes centar 4;Nevinih zrtava 13, Subotica, 34000;2021;1000;8000;500;300;600;False
 1087490441;Fitnes centar 4;Nevinih zrtava 13, Nis, 18000;2018;1200;11000;300;200;400;True
 1825636252;Fitnes centar 5;Ustanicka 2, Zemun, 11300;2022;2000;20000;700;500;1500;True
+2077136441;Ananas;Dositeja Obradovica 6, Petrovaradin, 21500;2010;123;321;234;432;444;False

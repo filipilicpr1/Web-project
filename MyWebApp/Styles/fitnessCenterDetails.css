@@ -1,0 +1,44 @@
+﻿font {
+    font-weight: bold;
+    font-size: 24px;
+}
+
+p {
+    font-size: 16px;
+}
+
+caption {
+    font-size: 16px;
+    font-weight: bold;
+    color: darkblue;
+}
+
+button.applyButton {
+    width: 100%;
+}
+
+font.cannotApplyFont {
+    font-size: 12px;
+    font-weight: normal;
+    color: green;
+}
+
+font.noCapacityFont {
+    font-size: 12px;
+    font-weight: normal;
+    color: red;
+}
+
+select.commentRating {
+    width: 100%;
+}
+
+textarea {
+    resize: none;
+    width: 250px;
+    height: 75px;
+}
+
+td.commentTable {
+    vertical-align: top;
+}

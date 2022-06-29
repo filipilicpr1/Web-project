@@ -129,7 +129,7 @@
 
         let noRoom = groupTraining.VisitorCapacity == groupTraining.VisitorCount;
         if (noRoom) {
-            tableContent = `<td><font name=${groupTraining.Id} class='cannotApplyFont'>Popunjeno</font></td>`;
+            tableContent = `<td><font name=${groupTraining.Id} class='noCapacityFont'>Popunjeno</font></td>`;
             return tableContent;
         }
 

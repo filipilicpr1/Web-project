@@ -7,7 +7,6 @@
     // ako korisnik nije bio ulogovan, pa se uloguje, ovo se ne azurira samo jer se ne refresuje stranica(za sad), pa mora da se opet ucita u funkciji
     var userId = sessionStorage.getItem("userId"); 
     var userType = ["POSETILAC", "TRENER", "VLASNIK"];
-    var user = null;
     var userIsVisitor = false;
     var userIsTrainer = false;
     var userIsOwner = false;
@@ -128,6 +127,7 @@
     // inicijalno popunjavanje tabele sa fitnes centrima pri ucitavanju stranice
     $.get("/api/fitnesscenters", function (data, status) {
         GenerateTableContent(data);
+        $("#nazivSort").trigger('click');
     }).fail(function (data) {
         alert(data.responseJSON);
     });

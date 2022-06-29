@@ -66,6 +66,32 @@ namespace MyWebApp.Models
             SaveComments();
         }
 
+        public static void UpdateCommentCreator(User creator)
+        {
+            if(creator.UserType != EUserType.POSETILAC)
+            {
+                return;
+            }
+            for(int i = 0; i < CommentsList.Count; i++)
+            {
+                if(CommentsList[i].Creator.Id == creator.Id)
+                {
+                    CommentsList[i].Creator = new User(creator);
+                }
+            }
+        }
+
+        public static void UpdateRelatedFitnessCenter(FitnessCenter fitnessCenter)
+        {
+            for(int i = 0; i < CommentsList.Count; i++)
+            {
+                if(CommentsList[i].RelatedFitnessCenter.Id == fitnessCenter.Id)
+                {
+                    CommentsList[i].RelatedFitnessCenter = new FitnessCenter(fitnessCenter);
+                }
+            }
+        }
+
         public static void LoadInitialComments()
         {
             CommentsList = new List<Comment>();

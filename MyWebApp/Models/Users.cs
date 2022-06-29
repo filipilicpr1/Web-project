@@ -57,6 +57,9 @@ namespace MyWebApp.Models
             existingUser.Email = user.Email;
             existingUser.Gender = user.Gender;
             SaveUsers();
+            Comments.UpdateCommentCreator(existingUser);
+            FitnessCenters.UpdateFitnessCenterOwner(existingUser);
+            GroupTrainings.UpdateGroupTrainingVisitor(existingUser);
         }
 
         public static List<User> FindEligibleTrainers()
@@ -71,6 +74,75 @@ namespace MyWebApp.Models
             newTrainer.FitnessCenterTrainer = new FitnessCenter(fc);
             SaveUsers();
             SaveFitnessCenterTrainer();
+        }
+
+        public static void UpdateFitnessCenterTrainer(FitnessCenter fitnessCenter)
+        {
+            for(int i = 0; i < UsersList.Count; i++)
+            {
+                if(UsersList[i].UserType != EUserType.TRENER)
+                {
+                    continue;
+                }
+                if(UsersList[i].FitnessCenterTrainer.Id == fitnessCenter.Id)
+                {
+                    UsersList[i].FitnessCenterTrainer = new FitnessCenter(fitnessCenter);
+                }
+            }
+        }
+
+        public static void UpdateOwnedFitnessCenter(FitnessCenter fitnessCenter)
+        {
+            for (int i = 0; i < UsersList.Count; i++)
+            {
+                if (UsersList[i].UserType != EUserType.VLASNIK)
+                {
+                    continue;
+                }
+                for(int j = 0; j < UsersList[i].FitnessCentersOwned.Count; j++)
+                {
+                    if(UsersList[i].FitnessCentersOwned[j].Id == fitnessCenter.Id)
+                    {
+                        UsersList[i].FitnessCentersOwned[j] = new FitnessCenter(fitnessCenter);
+                    }
+                }
+            }
+        }
+
+        public static void UpdateVisitingGroupTrainings(GroupTraining groupTraining)
+        {
+            for(int i = 0; i < UsersList.Count; i++)
+            {
+                if(UsersList[i].UserType != EUserType.POSETILAC)
+                {
+                    continue;
+                }
+                for(int j = 0; j < UsersList[i].VisitingGroupTrainings.Count; j++)
+                {
+                    if(UsersList[i].VisitingGroupTrainings[j].Id == groupTraining.Id)
+                    {
+                        UsersList[i].VisitingGroupTrainings[j] = new GroupTraining(groupTraining);
+                    }
+                }
+            }
+        }
+
+        public static void UpdateTrainingGroupTrainings(GroupTraining groupTraining)
+        {
+            for(int i = 0; i < UsersList.Count; i++)
+            {
+                if(UsersList[i].UserType != EUserType.TRENER)
+                {
+                    continue;
+                }
+                for(int j = 0; j < UsersList[i].TrainingGroupTrainings.Count; j++)
+                {
+                    if(UsersList[i].TrainingGroupTrainings[j].Id == groupTraining.Id)
+                    {
+                        UsersList[i].TrainingGroupTrainings[j] = new GroupTraining(groupTraining);
+                    }
+                }
+            }
         }
 
         public static void LoadInitialUsers()

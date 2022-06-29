@@ -85,6 +85,25 @@ namespace MyWebApp.Models
             originalFc.GroupTrainingCost = fc.GroupTrainingCost;
             originalFc.PersonalTrainingCost = fc.PersonalTrainingCost;
             SaveFitnessCenters();
+            Comments.UpdateRelatedFitnessCenter(originalFc);
+            GroupTrainings.UpdateFitnessCenterLocation(originalFc);
+            Users.UpdateFitnessCenterTrainer(originalFc);
+            Users.UpdateOwnedFitnessCenter(originalFc);
+        }
+
+        public static void UpdateFitnessCenterOwner(User owner)
+        {
+            if(owner.UserType != EUserType.VLASNIK)
+            {
+                return;
+            }
+            for(int i = 0; i < FitnessCentersList.Count; i++)
+            {
+                if(FitnessCentersList[i].Owner.Id == owner.Id)
+                {
+                    FitnessCentersList[i].Owner = new User(owner);
+                }
+            }
         }
 
         public static void LoadInitialFitnessCenters()

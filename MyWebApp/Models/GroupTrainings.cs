@@ -109,6 +109,8 @@ namespace MyWebApp.Models
             originalGt.DateOfTraining = gt.DateOfTraining;
             originalGt.Upcoming = CheckDate(originalGt.DateOfTraining);
             SaveGroupTrainings();
+            Users.UpdateVisitingGroupTrainings(originalGt);
+            Users.UpdateVisitingGroupTrainings(originalGt);
         }
 
         public static void DeleteGroupTraining(GroupTraining gt, User u)
@@ -123,6 +125,43 @@ namespace MyWebApp.Models
                 }
             }
             SaveGroupTrainings();
+        }
+
+        public static void UpdateGroupTrainingVisitor(User visitor)
+        {
+            if(visitor.UserType != EUserType.POSETILAC)
+            {
+                return;
+            }
+            for(int i = 0; i < GroupTrainingsList.Count; i++)
+            {
+                if (GroupTrainingsList[i].Deleted)
+                {
+                    continue;
+                }
+                for(int j = 0; j < GroupTrainingsList[i].Visitors.Count; j++)
+                {
+                    if(GroupTrainingsList[i].Visitors[j].Id == visitor.Id)
+                    {
+                        GroupTrainingsList[i].Visitors[j] = new User(visitor);
+                    }
+                }
+            }
+        }
+
+        public static void UpdateFitnessCenterLocation(FitnessCenter fitnessCenter)
+        {
+            for(int i = 0; i < GroupTrainingsList.Count; i++)
+            {
+                if (GroupTrainingsList[i].Deleted)
+                {
+                    continue;
+                }
+                if(GroupTrainingsList[i].FitnessCenterLocation.Id == fitnessCenter.Id)
+                {
+                    GroupTrainingsList[i].FitnessCenterLocation = new FitnessCenter(fitnessCenter);
+                }
+            }
         }
 
         public static void LoadInitialGroupTrainings()

@@ -136,8 +136,7 @@
             });
         }
     }
-
-
+    
     function GenerateGroupTrainingTable() {
         $.get("/api/grouptrainings/trainedtrainings", function (data, status) {
             if (data == null) {

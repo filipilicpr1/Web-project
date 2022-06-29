@@ -10,6 +10,8 @@
     $("#commentDiv").hide();
     $("#showEligibleTrainersButton").hide();
     $("#registerTrainerDiv").hide();
+    $("#showFitnessCenterTrainersButton").hide();
+    $("#blockTrainerDiv").hide();
 
     GetUser();
 
@@ -30,6 +32,7 @@
 
                 if (userIsOwner) {
                     $("#showEligibleTrainersButton").show();
+                    $("#showFitnessCenterTrainersButton").show();
                 }
             });
         } else {
@@ -252,6 +255,42 @@
             success: function (result) {
                 alert(result);
                 $("#showEligibleTrainersButton").trigger('click');
+            }
+        }).fail(function (data) {
+            alert(data.responseJSON);
+        });
+    });
+
+    $("#showFitnessCenterTrainersButton").click(function () {
+        if ($("#showFitnessCenterTrainersButton").text() == "Sakrij") {
+            $("#blockTrainerDiv").hide();
+            $("#showFitnessCenterTrainersButton").text("Blokiraj trenera");
+            return;
+        }
+        GenerateFitnessCenterTrainers();
+        $("#blockTrainerDiv").show();
+        $("#showFitnessCenterTrainersButton").text("Sakrij");
+    });
+
+    function GenerateFitnessCenterTrainers() {
+        $("#fitnessCenterTrainers").empty();
+        $.get("/api/users/fitnesscentertrainers", {'fitnessCenterId' : id}, function (data, status) {
+            for (user in data) {
+                $("#fitnessCenterTrainers").append(`<option value='${data[user].Id}'>${data[user].Username}</option>`);
+            }
+        }).fail(function (data) {
+            alert(data.responseJSON);
+        });;
+    }
+
+    $("#blockTrainerButton").click(function () {
+        let chosenUserId = $("#fitnessCenterTrainers").val();
+        $.ajax("/api/users/blocktrainer", {
+            method: 'PUT',
+            data: { 'id': chosenUserId },
+            success: function (result) {
+                alert(result);
+                $("#showFitnessCenterTrainersButton").trigger('click');
             }
         }).fail(function (data) {
             alert(data.responseJSON);

@@ -2,3 +2,5 @@
 444;Fitnes centar 2;Uspenska 3, Novi Sad, 21000;2015;2000;13000;500;100;1000;False
 1315565743;Fitnes centar 3;Alberto 69, Beograd, 11000;2019;1600;10000;700;500;1000;False
 473078892;Fitnes centar 4;Nevinih zrtava 13, Subotica, 34000;2021;1000;8000;500;300;600;False
+1087490441;Fitnes centar 4;Nevinih zrtava 13, Nis, 18000;2018;1200;11000;300;200;400;True
+1825636252;Fitnes centar 5;Ustanicka 2, Zemun, 11300;2022;2000;20000;700;500;1500;True

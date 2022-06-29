@@ -18,6 +18,7 @@ namespace MyWebApp.Models
         public string Email { get; set; }
         public DateTime BirthDate { get; set; }
         public EUserType UserType { get; set; }
+        public bool Blocked { get; set; }
         public List<GroupTraining> VisitingGroupTrainings { get; set; }
         public List<GroupTraining> TrainingGroupTrainings { get; set; }
         public FitnessCenter FitnessCenterTrainer { get; set; }
@@ -36,6 +37,7 @@ namespace MyWebApp.Models
             this.Email = u.Email;
             this.BirthDate = u.BirthDate;
             this.UserType = u.UserType;
+            this.Blocked = u.Blocked;
         }
 
     }

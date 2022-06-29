@@ -14,7 +14,12 @@ namespace MyWebApp.Controllers
     {
         public HttpResponseMessage Get(int id)
         {
-            return Request.CreateResponse(HttpStatusCode.OK, Users.FindById(id));
+            User u = Users.FindById(id);
+            if(u == null || u.Blocked)
+            {
+                return Request.CreateResponse(HttpStatusCode.NotFound, "Trazeni korisnik ne postoji");
+            }
+            return Request.CreateResponse(HttpStatusCode.OK, u);
         }
 
         public HttpResponseMessage Post(User user)
@@ -27,8 +32,6 @@ namespace MyWebApp.Controllers
             {
                 return Request.CreateResponse(code, errorMessage);
             }
-            user.UserType = EUserType.POSETILAC;
-            user.VisitingGroupTrainings = new List<GroupTraining>();
             Users.AddUser(user);
             return Request.CreateResponse(HttpStatusCode.OK, "Korisnik uspesno registrovan");
         }
@@ -193,6 +196,72 @@ namespace MyWebApp.Controllers
             return true;
         }
 
+        [Route("api/users/fitnesscentertrainers")]
+        [HttpGet]
+        [AllowAnonymous]
+        public HttpResponseMessage GetFitnessCenterTrainers(int fitnessCenterId)
+        {
+            CookieHeaderValue cookieRecv = Request.Headers.GetCookies("session-id").FirstOrDefault();
+            User u = GetLoggedInUser(cookieRecv);
+            if (u == null)
+            {
+                return Request.CreateResponse(HttpStatusCode.Unauthorized, "Not logged in");
+            }
+            if (u.UserType != EUserType.VLASNIK)
+            {
+                return Request.CreateResponse(HttpStatusCode.Forbidden, "Not authorized");
+            }
+            return Request.CreateResponse(HttpStatusCode.OK, Users.FindFitnessCenterTrainers(FitnessCenters.FindById(fitnessCenterId)));
+        }
+
+        [Route("api/users/blocktrainer")]
+        [HttpPut]
+        [AllowAnonymous]
+        public HttpResponseMessage BlockTrainer(User trainer)
+        {
+            CookieHeaderValue cookieRecv = Request.Headers.GetCookies("session-id").FirstOrDefault();
+            User u = GetLoggedInUser(cookieRecv);
+            if (u == null)
+            {
+                return Request.CreateResponse(HttpStatusCode.Unauthorized, "Not logged in");
+            }
+            if (u.UserType != EUserType.VLASNIK)
+            {
+                return Request.CreateResponse(HttpStatusCode.Forbidden, "Not authorized");
+            }
+            User blockTrainer = Users.FindById(trainer.Id);
+            if(blockTrainer.UserType != EUserType.TRENER)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "User not a trainer");
+            }
+            if (blockTrainer.Blocked)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "User already blocked");
+            }
+            if (!CheckIfTrainerWorksForOwner(u, blockTrainer))
+            {
+                return Request.CreateResponse(HttpStatusCode.Forbidden, "Not authorized");
+            }
+            Users.BlockTrainer(blockTrainer);
+            return Request.CreateResponse(HttpStatusCode.OK, "Trener blokiran");
+        }
+
+        private bool CheckIfTrainerWorksForOwner(User owner, User trainer)
+        {
+            foreach(var item in owner.FitnessCentersOwned)
+            {
+                if (item.Deleted)
+                {
+                    continue;
+                }
+                if(item.Id == trainer.FitnessCenterTrainer.Id)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         [Route("api/users/login")]
         [HttpPost]
         [AllowAnonymous]
@@ -224,6 +293,12 @@ namespace MyWebApp.Controllers
             {
                 var r = new HttpResponseMessage(HttpStatusCode.BadRequest);
                 r.Content = new StringContent("Invalid password");
+                return r;
+            }
+            if (u.Blocked)
+            {
+                var r = new HttpResponseMessage(HttpStatusCode.BadRequest);
+                r.Content = new StringContent("Access blocked");
                 return r;
             }
 

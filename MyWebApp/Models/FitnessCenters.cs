@@ -91,6 +91,22 @@ namespace MyWebApp.Models
             Users.UpdateOwnedFitnessCenter(originalFc);
         }
 
+        public static void DeleteFitnessCenter(FitnessCenter fc)
+        {
+            fc.Deleted = true;
+            User owner = Users.FindById(fc.Owner.Id);
+            foreach(var item in owner.FitnessCentersOwned)
+            {
+                if(item.Id == fc.Id)
+                {
+                    item.Deleted = true;
+                    break;
+                }
+            }
+            Users.BlockAllFitnessCenterTrainers(fc);
+            SaveFitnessCenters();
+        }
+
         public static void UpdateFitnessCenterOwner(User owner)
         {
             if(owner.UserType != EUserType.VLASNIK)

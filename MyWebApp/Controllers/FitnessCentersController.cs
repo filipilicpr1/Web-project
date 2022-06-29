@@ -215,6 +215,55 @@ namespace MyWebApp.Controllers
             return true;
         }
 
+        public HttpResponseMessage Delete(int id)
+        {
+            GroupTrainings.UpdateGroupTrainings();
+            CookieHeaderValue cookieRecv = Request.Headers.GetCookies("session-id").FirstOrDefault();
+            User u = GetLoggedInUser(cookieRecv);
+            FitnessCenter fc = FitnessCenters.FindById(id);
+            string errorMessage;
+            HttpStatusCode code;
+            bool isFitnessCenterValid = ValidateDeleteFitnessCenter(fc, u, out errorMessage, out code);
+            if (!isFitnessCenterValid)
+            {
+                return Request.CreateResponse(code, errorMessage);
+            }
+            FitnessCenters.DeleteFitnessCenter(fc);
+            return Request.CreateResponse(HttpStatusCode.OK, "Fitnes centar obrisan");
+        }
+
+        private bool ValidateDeleteFitnessCenter(FitnessCenter fc, User u, out string errorMessage, out HttpStatusCode code)
+        {
+            errorMessage = "";
+            code = HttpStatusCode.BadRequest;
+            if (u == null)
+            {
+                code = HttpStatusCode.Unauthorized;
+                errorMessage = "Not logged in";
+                return false;
+            }
+            if (u.UserType != EUserType.VLASNIK)
+            {
+                code = HttpStatusCode.Forbidden;
+                errorMessage = "Not authorized";
+                return false;
+            }
+            if(fc.Owner.Id != u.Id)
+            {
+                code = HttpStatusCode.Forbidden;
+                errorMessage = "Not authorized";
+                return false;
+            }
+            if (GroupTrainings.FitnessCenterHasUpcomingGroupTrainings(fc))
+            {
+                errorMessage = "Ne mozete brisati fitnes centar koji ima zakazane grupne treninge";
+                return false;
+            }
+
+            code = HttpStatusCode.OK;
+            return true;
+        }
+
         private List<FitnessCenter> SearchByAddress(string name, string address, int minYear, int maxYear)
         {
             bool searchByName = !String.Equals(name, "noName");

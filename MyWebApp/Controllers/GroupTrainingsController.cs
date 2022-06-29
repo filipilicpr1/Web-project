@@ -46,6 +46,10 @@ namespace MyWebApp.Controllers
             {
                 return Request.CreateResponse(HttpStatusCode.Forbidden, "Not authorized");
             }
+            if (u.Blocked)
+            {
+                return Request.CreateResponse(HttpStatusCode.Forbidden, "Blocked access");
+            }
             string errorMessage = "";
             bool update = false;
             HttpStatusCode code;
@@ -69,6 +73,10 @@ namespace MyWebApp.Controllers
             if (u.UserType != EUserType.TRENER)
             {
                 return Request.CreateResponse(HttpStatusCode.Forbidden, "Not authorized");
+            }
+            if (u.Blocked)
+            {
+                return Request.CreateResponse(HttpStatusCode.Forbidden, "Blocked access");
             }
             string errorMessage = "";
             bool update = true;
@@ -203,6 +211,12 @@ namespace MyWebApp.Controllers
             {
                 code = HttpStatusCode.Forbidden;
                 errorMessage = "Not authorized";
+                return false;
+            }
+            if (u.Blocked)
+            {
+                code = HttpStatusCode.Forbidden;
+                errorMessage = "Blocked access";
                 return false;
             }
             bool userIsTrainer = CheckIfUserIsTrainerOnGroupTraining(u, gt);
@@ -348,6 +362,10 @@ namespace MyWebApp.Controllers
             {
                 return Request.CreateResponse(HttpStatusCode.Forbidden, "Not authorized");
             }
+            if (u.Blocked)
+            {
+                return Request.CreateResponse(HttpStatusCode.Forbidden, "Blocked access");
+            }
             return Request.CreateResponse(HttpStatusCode.OK, GroupTrainings.FindAllTrainingsByTrainer(u));
         }
 
@@ -408,6 +426,10 @@ namespace MyWebApp.Controllers
             {
                 return Request.CreateResponse(HttpStatusCode.Forbidden, "Not authorized");
             }
+            if (u.Blocked)
+            {
+                return Request.CreateResponse(HttpStatusCode.Forbidden, "Blocked access");
+            }
             return Request.CreateResponse(HttpStatusCode.OK, GroupTrainings.FindCompletedTrainingsByTrainer(u));
         }
 
@@ -426,6 +448,10 @@ namespace MyWebApp.Controllers
             if (u.UserType != EUserType.TRENER)
             {
                 return Request.CreateResponse(HttpStatusCode.Forbidden, "Not authorized");
+            }
+            if (u.Blocked)
+            {
+                return Request.CreateResponse(HttpStatusCode.Forbidden, "Blocked access");
             }
             return Request.CreateResponse(HttpStatusCode.OK, SearchCompletedTrainings(groupTrainingSearchDTO.Name, groupTrainingSearchDTO.TrainingType, groupTrainingSearchDTO.MinDate, groupTrainingSearchDTO.MaxDate, u));
         }

@@ -127,6 +127,26 @@ namespace MyWebApp.Models
             SaveGroupTrainings();
         }
 
+        public static bool FitnessCenterHasUpcomingGroupTrainings(FitnessCenter fc)
+        {
+            foreach(var item in GroupTrainingsList)
+            {
+                if (item.Deleted)
+                {
+                    continue;
+                }
+                if (!item.Upcoming)
+                {
+                    continue;
+                }
+                if(item.FitnessCenterLocation.Id == fc.Id)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         public static void UpdateGroupTrainingVisitor(User visitor)
         {
             if(visitor.UserType != EUserType.POSETILAC)

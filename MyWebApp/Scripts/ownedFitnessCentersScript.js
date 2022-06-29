@@ -91,6 +91,21 @@
                     GenerateFitnessCenterEditTableFields();
                 }
             });
+
+            $(".deleteFitnessCenterButton").click(function (event) {
+                if ($("#showNewFitnessCenterTableButton").text() == "Sakrij") {
+                    $("#showNewFitnessCenterTableButton").trigger('click');
+                }
+                $.ajax(`/api/fitnesscenters/${event.target.name}`, {
+                    method: 'DELETE',
+                    success: function (result) {
+                        alert(result);
+                        GenerateFitnessCenterTable();
+                    }
+                }).fail(function (data) {
+                    alert(data.responseJSON);
+                });
+            });
         }).fail(function (data) {
             alert(data.responseJSON);
         });

@@ -38,6 +38,9 @@ namespace MyWebApp.Models
         public static void AddUser(User user)
         {
             user.Id = GenerateId();
+            user.Blocked = false;
+            user.UserType = EUserType.POSETILAC;
+            user.VisitingGroupTrainings = new List<GroupTraining>();
             UsersList.Add(user);
             SaveUsers();
         }
@@ -76,11 +79,47 @@ namespace MyWebApp.Models
             SaveFitnessCenterTrainer();
         }
 
+        public static List<User> FindFitnessCenterTrainers(FitnessCenter fc)
+        {
+            return UsersList.FindAll(item => (item.UserType == EUserType.TRENER) && !item.Blocked && (item.FitnessCenterTrainer.Id == fc.Id));
+        }
+
+        public static void BlockTrainer(User trainer)
+        {
+            trainer.Blocked = true;
+            SaveUsers();
+        }
+
+        public static void BlockAllFitnessCenterTrainers(FitnessCenter fc)
+        {
+            foreach(User u in UsersList)
+            {
+                if(u.UserType != EUserType.TRENER)
+                {
+                    continue;
+                }
+                if (u.Blocked)
+                {
+                    continue;
+                }
+                if(u.FitnessCenterTrainer.Id == fc.Id)
+                {
+                    u.FitnessCenterTrainer.Deleted = true;
+                    u.Blocked = true;
+                }
+            }
+            SaveUsers();
+        }
+
         public static void UpdateFitnessCenterTrainer(FitnessCenter fitnessCenter)
         {
             for(int i = 0; i < UsersList.Count; i++)
             {
                 if(UsersList[i].UserType != EUserType.TRENER)
+                {
+                    continue;
+                }
+                if (UsersList[i].Blocked)
                 {
                     continue;
                 }
@@ -135,7 +174,11 @@ namespace MyWebApp.Models
                 {
                     continue;
                 }
-                for(int j = 0; j < UsersList[i].TrainingGroupTrainings.Count; j++)
+                if (UsersList[i].Blocked)
+                {
+                    continue;
+                }
+                for (int j = 0; j < UsersList[i].TrainingGroupTrainings.Count; j++)
                 {
                     if(UsersList[i].TrainingGroupTrainings[j].Id == groupTraining.Id)
                     {
@@ -171,7 +214,7 @@ namespace MyWebApp.Models
             StreamWriter sw = new StreamWriter(FilePath);
             foreach(User u in UsersList)
             {
-                string text = u.Id + ";" + u.Username + ";" + u.Password + ";" + u.Name + ";" + u.LastName + ";" + u.Gender + ";" + u.Email + ";" + u.BirthDate.ToString("dd/MM/yyyy") + ";" + u.UserType.ToString();
+                string text = u.Id + ";" + u.Username + ";" + u.Password + ";" + u.Name + ";" + u.LastName + ";" + u.Gender + ";" + u.Email + ";" + u.BirthDate.ToString("dd/MM/yyyy") + ";" + u.UserType.ToString() + ";" + u.Blocked;
                 sw.WriteLine(text);
             }
             sw.Close();
@@ -237,6 +280,7 @@ namespace MyWebApp.Models
                     u.FitnessCentersOwned = new List<FitnessCenter>();
                     break;
             }
+            u.Blocked = bool.Parse(values[9]);
             return u;
         }
 

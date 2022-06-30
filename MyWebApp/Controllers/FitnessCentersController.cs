@@ -55,7 +55,7 @@ namespace MyWebApp.Controllers
         {
             CookieHeaderValue cookieRecv = Request.Headers.GetCookies("session-id").FirstOrDefault();
             User u = GetLoggedInUser(cookieRecv);
-            if (u == null)
+            if (u == null || !u.LoggedIn)
             {
                 return Request.CreateResponse(HttpStatusCode.Unauthorized, "Not logged in");
             }
@@ -70,7 +70,7 @@ namespace MyWebApp.Controllers
         {
             CookieHeaderValue cookieRecv = Request.Headers.GetCookies("session-id").FirstOrDefault();
             User u = GetLoggedInUser(cookieRecv);
-            if (u == null)
+            if (u == null || !u.LoggedIn)
             {
                 return Request.CreateResponse(HttpStatusCode.Unauthorized, "Not logged in");
             }
@@ -94,7 +94,7 @@ namespace MyWebApp.Controllers
         {
             CookieHeaderValue cookieRecv = Request.Headers.GetCookies("session-id").FirstOrDefault();
             User u = GetLoggedInUser(cookieRecv);
-            if (u == null)
+            if (u == null || !u.LoggedIn)
             {
                 return Request.CreateResponse(HttpStatusCode.Unauthorized, "Not logged in");
             }
@@ -236,7 +236,7 @@ namespace MyWebApp.Controllers
         {
             errorMessage = "";
             code = HttpStatusCode.BadRequest;
-            if (u == null)
+            if (u == null || !u.LoggedIn)
             {
                 code = HttpStatusCode.Unauthorized;
                 errorMessage = "Not logged in";

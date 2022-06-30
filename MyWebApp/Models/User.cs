@@ -23,6 +23,7 @@ namespace MyWebApp.Models
         public List<GroupTraining> TrainingGroupTrainings { get; set; }
         public FitnessCenter FitnessCenterTrainer { get; set; }
         public List<FitnessCenter> FitnessCentersOwned { get; set; }
+        public bool LoggedIn { get; set; }
 
         public User() { }
 

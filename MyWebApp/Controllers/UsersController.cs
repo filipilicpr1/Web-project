@@ -48,7 +48,12 @@ namespace MyWebApp.Controllers
             {
                 return Request.CreateResponse(HttpStatusCode.Unauthorized, "Not logged in");
             }
-            if(Users.FindById(int.Parse(sessionId)).Id != user.Id)
+            User u = Users.FindById(int.Parse(sessionId));
+            if (!u.LoggedIn)
+            {
+                return Request.CreateResponse(HttpStatusCode.Unauthorized, "Not logged in");
+            }
+            if (u.Id != user.Id)
             {
                 return Request.CreateResponse(HttpStatusCode.Forbidden, "Not authorized");
             }
@@ -132,7 +137,7 @@ namespace MyWebApp.Controllers
         {
             CookieHeaderValue cookieRecv = Request.Headers.GetCookies("session-id").FirstOrDefault();
             User u = GetLoggedInUser(cookieRecv);
-            if (u == null)
+            if (u == null || !u.LoggedIn)
             {
                 return Request.CreateResponse(HttpStatusCode.Unauthorized, "Not logged in");
             }
@@ -150,7 +155,7 @@ namespace MyWebApp.Controllers
         {
             CookieHeaderValue cookieRecv = Request.Headers.GetCookies("session-id").FirstOrDefault();
             User u = GetLoggedInUser(cookieRecv);
-            if (u == null)
+            if (u == null || !u.LoggedIn)
             {
                 return Request.CreateResponse(HttpStatusCode.Unauthorized, "Not logged in");
             }
@@ -203,7 +208,7 @@ namespace MyWebApp.Controllers
         {
             CookieHeaderValue cookieRecv = Request.Headers.GetCookies("session-id").FirstOrDefault();
             User u = GetLoggedInUser(cookieRecv);
-            if (u == null)
+            if (u == null || !u.LoggedIn)
             {
                 return Request.CreateResponse(HttpStatusCode.Unauthorized, "Not logged in");
             }
@@ -221,7 +226,7 @@ namespace MyWebApp.Controllers
         {
             CookieHeaderValue cookieRecv = Request.Headers.GetCookies("session-id").FirstOrDefault();
             User u = GetLoggedInUser(cookieRecv);
-            if (u == null)
+            if (u == null || !u.LoggedIn)
             {
                 return Request.CreateResponse(HttpStatusCode.Unauthorized, "Not logged in");
             }
@@ -301,7 +306,14 @@ namespace MyWebApp.Controllers
                 r.Content = new StringContent("Access blocked");
                 return r;
             }
+            if (u.LoggedIn)
+            {
+                var r = new HttpResponseMessage(HttpStatusCode.BadRequest);
+                r.Content = new StringContent("Already logged in, logout first");
+                return r;
+            }
 
+            u.LoggedIn = true;
             var resp = new HttpResponseMessage();
             var cookie = GetCookie(u);
             resp.Headers.AddCookies(new CookieHeaderValue[] { cookie });
@@ -315,12 +327,14 @@ namespace MyWebApp.Controllers
         {
             var resp = new HttpResponseMessage();
             CookieHeaderValue cookieRecv = Request.Headers.GetCookies("session-id").FirstOrDefault();
-            if (cookieRecv == null)
+            User u = GetLoggedInUser(cookieRecv);
+            if (u == null || !u.LoggedIn)
             {
                 var r = new HttpResponseMessage(HttpStatusCode.BadRequest);
                 r.Content = new StringContent("Niste prijavljeni");
                 return r;
             }
+            u.LoggedIn = false;
             resp.Headers.Remove("session-id");
             resp.Content = new StringContent("Uspesno ste se odjavili");
             var cookie = GetCookie(null);

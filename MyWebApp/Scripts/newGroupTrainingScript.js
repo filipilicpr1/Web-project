@@ -421,9 +421,9 @@
         let hour = $("#trainingHour").val();
         let minute = $("#trainingMinute").val();
         let date = GetDateOfTraining(year, month, day, hour, minute);
-        isTrainingDateValid = CheckIfDateIsValid(date, 0);   // 0 je offset, gledamo 0 dana unapred za izmenu
+        isTrainingDateValid = CheckIfDateIsValid(date, 3);   // 3 je offset, gledamo 3 dana unapred i za izmenu
         if (!isTrainingDateValid) {
-            $("#invalidTrainingDate").html("Trening ne moze biti u proslosti");
+            $("#invalidTrainingDate").html("Trening mora biti bar 3 dana unapred");
             $("#invalidTrainingDate").css("color", "red");
             return;
         }

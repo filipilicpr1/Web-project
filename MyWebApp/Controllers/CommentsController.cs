@@ -45,7 +45,7 @@ namespace MyWebApp.Controllers
             }
             User u = Users.FindById(int.Parse(sessionId));
             // ako jeste ulogovan, provera da li je posetilac
-            if (u.UserType != EUserType.VLASNIK)
+            if (u.UserType != EUserType.VLASNIK || !u.LoggedIn)
             {
                 return false;
             }
@@ -74,7 +74,11 @@ namespace MyWebApp.Controllers
                 return Request.CreateResponse(HttpStatusCode.Unauthorized, "Not logged in");
             }
             User u = Users.FindById(int.Parse(sessionId));
-            if(u.UserType != EUserType.POSETILAC)
+            if (!u.LoggedIn)
+            {
+                return Request.CreateResponse(HttpStatusCode.Unauthorized, "Not logged in");
+            }
+            if (u.UserType != EUserType.POSETILAC)
             {
                 return Request.CreateResponse(HttpStatusCode.Forbidden, "Not authorized");
             }

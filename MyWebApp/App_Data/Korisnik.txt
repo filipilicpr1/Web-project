@@ -5,7 +5,7 @@
 12222;saitama;grusrb;Pera;Peric;Zenski;perica@gmail.com;01/05/2003;POSETILAC;False
 34444;macakiti1;MacaKiti98;Miss;Kiti;Drugo;kitkat6@tutanota.com;12/10/2017;POSETILAC;False
 882674887;novicaa;novica123;Novicaa;Velickovic;Drugo;novica@hiv.rs;07/07/1997;POSETILAC;False
-1383338672;dimi69;dimacar;Dimimi;Serac;Muski;dimi@racunar.mi;20/11/2011;POSETILAC;False
+1383338672;dimi69;dimacar;Dimimmi;Serac;Muski;dimi@racunar.mi;20/11/2011;POSETILAC;False
 239955583;djole1;djolekralj;Djordje;Kostic;Muski;djole@vr.rs;07/06/2017;POSETILAC;False
 328907041;mrav;mravcar;Malisa;Mrav;Drugo;mrav@mrv.com;31/12/2012;POSETILAC;False
 1802131575;ana;anagod;Anatham;Pha;Muski;ana@god.com;01/04/2002;POSETILAC;False
@@ -18,3 +18,4 @@
 419558711;mica;mica123;Mica;Mica;Drugo;mica@mica.com;11/12/2015;TRENER;True
 1636824724;trener1;trener1;Trenerko;Treneric;Muski;tre@ner.com;05/04/2017;TRENER;True
 1667908152;trener2;trener2;Trenerko;Treneric;Muski;tre@ner.com;03/03/2020;TRENER;True
+516427054;trener5;trener5;Trenerko;Treneric;Muski;tre@ner.com;31/12/2013;TRENER;True

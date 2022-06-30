@@ -40,6 +40,7 @@ namespace MyWebApp.Models
             user.Id = GenerateId();
             user.Blocked = false;
             user.UserType = EUserType.POSETILAC;
+            user.LoggedIn = false;
             user.VisitingGroupTrainings = new List<GroupTraining>();
             UsersList.Add(user);
             SaveUsers();

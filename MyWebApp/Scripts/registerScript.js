@@ -118,7 +118,6 @@
             isConfirmPasswordValid = true;
             isNameValid = true;
             isLastNameValid = true;
-            isDateValid = true;
         });
     }
 
@@ -369,7 +368,7 @@
 
     $("#editButton").click(function () {
         // ako bar jedno polje nije validno ne radi nista
-        if (!isUsernameValid || !isPasswordValid || !isConfirmPasswordValid || !isEmailValid || !isNameValid || !isLastNameValid || !isDateValid) {
+        if (!isUsernameValid || !isPasswordValid || !isConfirmPasswordValid || !isEmailValid || !isNameValid || !isLastNameValid) {
             return;
         }
         let username = $("#registerUsername").val();

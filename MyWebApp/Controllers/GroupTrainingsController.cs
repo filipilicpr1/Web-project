@@ -38,7 +38,7 @@ namespace MyWebApp.Controllers
         {
             CookieHeaderValue cookieRecv = Request.Headers.GetCookies("session-id").FirstOrDefault();
             User u = GetLoggedInUser(cookieRecv);
-            if (u == null)
+            if (u == null || !u.LoggedIn)
             {
                 return Request.CreateResponse(HttpStatusCode.Unauthorized, "Not logged in");
             }
@@ -66,7 +66,7 @@ namespace MyWebApp.Controllers
         {
             CookieHeaderValue cookieRecv = Request.Headers.GetCookies("session-id").FirstOrDefault();
             User u = GetLoggedInUser(cookieRecv);
-            if (u == null)
+            if (u == null || !u.LoggedIn)
             {
                 return Request.CreateResponse(HttpStatusCode.Unauthorized, "Not logged in");
             }
@@ -116,10 +116,11 @@ namespace MyWebApp.Controllers
                 errorMessage = "Nevalidan kapacitet treninga";
                 return false;
             }
-            DateTime currentDate = update ? DateTime.Now : DateTime.Now.AddDays(3);
-            if (!CompareDates(currentDate, gt.DateOfTraining))
+            //DateTime currentDate = update ? DateTime.Now : DateTime.Now.AddDays(3);
+            if (!CompareDates(DateTime.Now.AddDays(3), gt.DateOfTraining))
             {
-                errorMessage = update ? "Trening ne moze biti u proslosti" : "Trening mora biti kreiran bar 3 dana unapred";
+                //errorMessage = update ? "Trening ne moze biti u proslosti" : "Trening mora biti kreiran bar 3 dana unapred";
+                errorMessage = "Trening mora biti  bar 3 dana unapred";
                 return false;
             }
 
@@ -201,7 +202,7 @@ namespace MyWebApp.Controllers
         {
             errorMessage = "";
             code = HttpStatusCode.BadRequest;
-            if(u == null)
+            if(u == null || !u.LoggedIn)
             {
                 code = HttpStatusCode.Unauthorized;
                 errorMessage = "Not logged in";
@@ -264,17 +265,8 @@ namespace MyWebApp.Controllers
         public HttpResponseMessage ApplyForTraining(GroupTraining groupTraining)
         {
             GroupTrainings.UpdateGroupTrainings();
-            string sessionId = "";
             CookieHeaderValue cookieRecv = Request.Headers.GetCookies("session-id").FirstOrDefault();
-            if (cookieRecv != null)
-            {
-                sessionId = cookieRecv["session-id"].Value;
-            }
-            if(sessionId == "")
-            {
-                return Request.CreateResponse(HttpStatusCode.Unauthorized, "Not logged in");
-            }
-            User u = Users.FindById(int.Parse(sessionId));
+            User u = GetLoggedInUser(cookieRecv);
             GroupTraining gt = GroupTrainings.FindById(groupTraining.Id);
             string errorMessage;
             HttpStatusCode code;
@@ -291,7 +283,7 @@ namespace MyWebApp.Controllers
         {
             errorMessage = "";
             code = HttpStatusCode.BadRequest;
-            if (u == null)
+            if (u == null || !u.LoggedIn)
             {
                 code = HttpStatusCode.Unauthorized;
                 errorMessage = "Not logged in";
@@ -354,7 +346,7 @@ namespace MyWebApp.Controllers
             // ako nije vrati null, ako jeste vrati tog korisnika
             CookieHeaderValue cookieRecv = Request.Headers.GetCookies("session-id").FirstOrDefault();
             User u = GetLoggedInUser(cookieRecv);
-            if (u == null)
+            if (u == null || !u.LoggedIn)
             {
                 return Request.CreateResponse(HttpStatusCode.Unauthorized, "Not logged in");
             }
@@ -379,7 +371,7 @@ namespace MyWebApp.Controllers
             // ako nije vrati null, ako jeste vrati tog korisnika
             CookieHeaderValue cookieRecv = Request.Headers.GetCookies("session-id").FirstOrDefault();
             User u = GetLoggedInUser(cookieRecv);
-            if(u == null)
+            if(u == null || !u.LoggedIn)
             {
                 return Request.CreateResponse(HttpStatusCode.Unauthorized, "Not logged in");
             }
@@ -396,7 +388,7 @@ namespace MyWebApp.Controllers
             // ako nije vrati null, ako jeste vrati tog korisnika
             CookieHeaderValue cookieRecv = Request.Headers.GetCookies("session-id").FirstOrDefault();
             User u = GetLoggedInUser(cookieRecv);
-            if (u == null)
+            if (u == null || !u.LoggedIn)
             {
                 return Request.CreateResponse(HttpStatusCode.Unauthorized, "Not logged in");
             }
@@ -418,7 +410,7 @@ namespace MyWebApp.Controllers
             // ako nije vrati null, ako jeste vrati tog korisnika
             CookieHeaderValue cookieRecv = Request.Headers.GetCookies("session-id").FirstOrDefault();
             User u = GetLoggedInUser(cookieRecv);
-            if (u == null)
+            if (u == null || !u.LoggedIn)
             {
                 return Request.CreateResponse(HttpStatusCode.Unauthorized, "Not logged in");
             }
@@ -441,7 +433,7 @@ namespace MyWebApp.Controllers
             GroupTrainings.UpdateGroupTrainings();
             CookieHeaderValue cookieRecv = Request.Headers.GetCookies("session-id").FirstOrDefault();
             User u = GetLoggedInUser(cookieRecv);
-            if (u == null)
+            if (u == null || !u.LoggedIn)
             {
                 return Request.CreateResponse(HttpStatusCode.Unauthorized, "Not logged in");
             }

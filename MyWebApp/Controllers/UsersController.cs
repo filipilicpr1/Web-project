@@ -22,6 +22,20 @@ namespace MyWebApp.Controllers
             return Request.CreateResponse(HttpStatusCode.OK, u);
         }
 
+        [Route("api/users/getsessionuser")]
+        [HttpGet]
+        [AllowAnonymous]
+        public HttpResponseMessage GetSessionUser()
+        {
+            CookieHeaderValue cookieRecv = Request.Headers.GetCookies("session-id").FirstOrDefault();
+            User u = GetLoggedInUser(cookieRecv);
+            if (u == null || u.Blocked || !u.LoggedIn)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Invalid request");
+            }
+            return Request.CreateResponse(HttpStatusCode.OK, u);
+        }
+
         public HttpResponseMessage Post(User user)
         {
             string errorMessage = "";

@@ -17,6 +17,9 @@
     $("#visitedGroupTrainingsLink").hide();
     $("#newGroupTrainingLink").hide();
     $("#ownedFitnessCentersLink").hide();
+    // sakrijemo div za pretragu, pa ga prikazemo tek kad se ucitaju fitnes centri
+    $("#pretraga").hide();
+
     // prikaz odredjenog sadrzaja u zavisnosti od toga da li je korsnik ulogovan ili ne
     if (userId == null || userId == "") {
         // ako nije ulogovan
@@ -46,7 +49,7 @@
         $("#editButton").show();
         $("#submitButton").hide();
 
-        $.get("/api/users", { 'id': userId }, function (data, status) {
+        $.get("/api/users/getsessionuser",  function (data, status) {
             // dobavimo usera, pa odredimo koji je tip 
             userIsVisitor = userType[data.UserType] == "POSETILAC"; // za sad se generise samo sadrzaj za posetioca
             userIsTrainer = userType[data.UserType] == "TRENER";
@@ -129,6 +132,7 @@
     $.get("/api/fitnesscenters", function (data, status) {
         GenerateTableContent(data);
         $("#nazivSort").trigger('click');
+        $("#pretraga").show();
     }).fail(function (data) {
         alert(data.responseJSON);
     });
@@ -188,9 +192,9 @@
     function GenerateTableContent(data) {
         // svaki red ima naziv,adresu,godinu otvaranja, i dugme(link) koje kada se pritisne ide se na drugu stranicu
         // da bi znali koje dugme smo pritisli u url stavimo id fitnes centra, koji posle izvucemo na drugoj stranici i odradimo get
-        let tableContent = "<table id='myTable' border='1'><tr><th id='nazivSort'>Naziv</th><th id='adresaSort'>Adresa</th><th id='godinaSort'>Godina otvaranja</th><th></th></tr>";
+        let tableContent = "<table id='myTable' border='1'><caption align='center'>Fitnes centri</caption><tr><th id='nazivSort'>Naziv</th><th id='adresaSort'>Adresa</th><th id='godinaSort'>Godina otvaranja</th><th></th></tr>";
         for (fitnessCenter in data) {
-            tableContent += `<tr><td>${data[fitnessCenter].Name}</td><td>${data[fitnessCenter].Address}</td><td>${data[fitnessCenter].YearCreated}</td><td><a href='fitnessCenterDetails.html?${data[fitnessCenter].Id}'><button class="detailsButton">Detalji</button></a></td></tr>`;
+            tableContent += `<tr><td>${data[fitnessCenter].Name}</td><td>${data[fitnessCenter].Address}</td><td>${data[fitnessCenter].YearCreated}</td><td><a class='detailsLink' href='fitnessCenterDetails.html?${data[fitnessCenter].Id}'>Detalji</a></td></tr>`;
         }
         tableContent += "</table>";
         $("#tableDiv").html(tableContent);

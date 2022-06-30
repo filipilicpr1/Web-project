@@ -1,10 +1,23 @@
-﻿font {
+﻿body {
+    background-color: mintcream
+}
+
+font.contentFont {
     font-weight: bold;
     font-size: 24px;
 }
 
-p {
-    font-size: 16px;
+font.labelFont {
+    font-size: 20px;
+}
+
+
+h3{
+    color : royalblue;
+}
+
+h4{
+    color : royalblue
 }
 
 caption {
@@ -13,24 +26,24 @@ caption {
     color: darkblue;
 }
 
-button.applyButton {
-    width: 100%;
-}
 
 font.cannotApplyFont {
-    font-size: 12px;
-    font-weight: normal;
+    font-size: 14px;
+    font-weight: bold;
     color: green;
 }
 
 font.noCapacityFont {
-    font-size: 12px;
-    font-weight: normal;
+    font-size: 14px;
+    font-weight: bold;
     color: red;
 }
 
-select.commentRating {
+select#commentRating {
     width: 100%;
+    border: 1px solid black;
+    background-color: azure;
+    cursor: pointer;
 }
 
 textarea {
@@ -41,4 +54,123 @@ textarea {
 
 td.commentTable {
     vertical-align: top;
+}
+
+div#fitnessCenterDetails{
+    background-color : whitesmoke;
+    width : 40%;
+}
+
+table#groupTrainingsTable {
+    background-color: aqua;
+}
+
+a.backLink {
+    background-color: red;
+    border: 2px solid black;
+    color: white;
+    padding: 5px 10px;
+    text-align: center;
+    display: inline-block;
+    font-size: 20px;
+    margin: 10px 0px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+div#fitnessCenterCommentsTable {
+    width: 40%;
+    background-color: whitesmoke;
+}
+
+dt {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+td.applyTd{
+    text-align : center;
+}
+
+button.applyButton {
+    border: 1px solid black;
+    background-color: azure;
+    color: navy;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+}
+
+button#sendCommentButton {
+    border: 1px solid black;
+    background-color: blue;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    font-size : 14px;
+}
+
+div#commentDiv {
+    background-color: whitesmoke;
+    width: 40%;
+}
+
+button.approveYes {
+    border: 1px solid black;
+    background-color: green;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button.approveNo {
+    border: 1px solid black;
+    background-color: red;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button#showEligibleTrainersButton {
+    border: 1px solid black;
+    background-color: azure;
+    color: navy;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button#showFitnessCenterTrainersButton {
+    border: 1px solid black;
+    background-color: azure;
+    color: navy;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+select#eligibleTrainers {
+    border: 1px solid black;
+    background-color: azure;
+    cursor: pointer;
+}
+
+select#fitnessCenterTrainers {
+    border: 1px solid black;
+    background-color: azure;
+    cursor: pointer;
+}
+
+button#submitTrainerButton {
+    border: 1px solid black;
+    background-color: green;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button#blockTrainerButton {
+    border: 1px solid black;
+    background-color: red;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
 }

@@ -1,4 +1,8 @@
-﻿caption {
+﻿body {
+    background-color: mintcream
+}
+
+caption {
     font-size: 22px;
     font-weight: bold;
     color: darkblue;
@@ -6,4 +10,44 @@
 
 input.timeInput {
     width: 30px;
+}
+
+table#myTable {
+    cursor: default;
+    background-color: aqua;
+}
+
+button#visitorPretragaButton {
+    border: 1px solid black;
+    background-color: azure;
+    color: mediumblue;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button#trainerPretragaButton {
+    border: 1px solid black;
+    background-color: azure;
+    color: mediumblue;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+a.backLink {
+    background-color: red;
+    border: 2px solid black;
+    color: white;
+    padding: 5px 10px;
+    text-align: center;
+    display: inline-block;
+    font-size: 20px;
+    margin: 10px 0px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+select {
+    border: 1px solid black;
+    background-color: azure;
+    cursor: pointer;
 }

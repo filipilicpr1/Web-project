@@ -1,4 +1,8 @@
-﻿h3 {
+﻿body{
+    background-color : mintcream
+}
+
+h3 {
     color: darkblue;
 }
 
@@ -20,16 +24,147 @@ div#buttonsDiv {
     float: right;
 }
 
+font {
+    font-size: 12px;
+}
+
+table#myTable {
+    cursor: default;
+    background-color : aqua
+}
+
+caption {
+    font-size: 26px;
+    font-weight: bold;
+    color: darkblue;
+}
+
+a#visitedGroupTrainingsLink {
+    background-color: royalblue;
+    border: 2px solid black;
+    color: whitesmoke;
+    padding: 5px 10px;
+    text-align: center;
+    display: inline-block;
+    font-size: 20px;
+    margin: 10px 0px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+a.detailsLink {
+    background-color: ghostwhite;
+    border: 2px solid black;
+    color: blue;
+    padding: 1px 2px;
+    text-align: center;
+    display: inline-block;
+    font-size: 12px;
+    margin: 1px 3px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+a#newGroupTrainingLink {
+    background-color: blue;
+    border: 2px solid black;
+    color: aliceblue;
+    padding: 5px 10px;
+    text-align: center;
+    display: inline-block;
+    font-size: 20px;
+    margin: 10px 0px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+a#ownedFitnessCentersLink {
+    background-color: dodgerblue;
+    border: 2px solid black;
+    color: ghostwhite;
+    padding: 5px 10px;
+    text-align: center;
+    display: inline-block;
+    font-size: 20px;
+    margin: 10px 0px;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+button#pretragaButton {
+    border: 1px solid black;
+    background-color: azure;
+    color: mediumblue;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button#showRegisterTableButton {
+    border: 1px solid black;
+    background-color: azure;
+    color: navy;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button#showEditTable {
+    border: 1px solid black;
+    background-color: azure;
+    color: navy;
+    font-weight: bold;
+    cursor: pointer;
+}
+
 button#submitButton {
+    border: 2px solid black;
+    background-color: blue;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
     width: 100%;
     height: 100%;
 }
 
 button#editButton {
+    border: 2px solid black;
+    background-color: blue;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
     width: 100%;
     height: 100%;
 }
 
-font {
-    font-size: 12px;
+button#showLoginTableButton {
+    border: 1px solid black;
+    background-color: azure;
+    color: navy;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button#loginButton {
+    border: 2px solid black;
+    background-color: green;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button#logoutButton {
+    border: 2px solid black;
+    background-color: red;
+    color: white;
+    font-weight: bold;
+    cursor : pointer;
+}
+
+select {
+    border: 1px solid black;
+    background-color: azure;
+    cursor : pointer;
+}
+
+input[type="radio"] {
+    cursor: pointer;
 }

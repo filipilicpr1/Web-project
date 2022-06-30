@@ -118,7 +118,7 @@
         $("#showRegisterTableButton").text("Registracija novog korisnika");
         $("#showLoginTableButton").text("Prijava korisnika");
         $("#showEditTable").text("Izmeni profil");
-        $.get("/api/users", { 'id': userId }, function (data, status) {
+        $.get("/api/users/getsessionuser", function (data, status) {
             // dobavimo usera, pa odredimo koji je tip 
             let userIsVisitor = userType[data.UserType] == "POSETILAC"; // za sad se generise samo sadrzaj za posetioca
             let userIsTrainer = userType[data.UserType] == "TRENER";

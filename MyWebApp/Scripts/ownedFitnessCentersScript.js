@@ -48,7 +48,7 @@
 
     function GetOwner() {
         if (userId != null && userId != "") {
-            $.get("/api/users", { 'id': userId }, function (data, status) {
+            $.get("/api/users/getsessionuser", function (data, status) {
                 // dobavimo usera, pa odredimo koji je tip 
                 userIsOwner = userType[data.UserType] == "VLASNIK";
                 // u zavisnosti od tipa prikazemo odredjene dugmice

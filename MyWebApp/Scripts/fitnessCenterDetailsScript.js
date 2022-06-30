@@ -12,6 +12,8 @@
     $("#registerTrainerDiv").hide();
     $("#showFitnessCenterTrainersButton").hide();
     $("#blockTrainerDiv").hide();
+    $("#fitnessCenterDetails").hide();
+    $("#ownerDiv").hide();
 
     GetUser();
 
@@ -19,7 +21,7 @@
     function GetUser() {
         if (userId != null && userId != "") {
             // imamo ulogovanog korisnika
-            $.get("/api/users", { 'id': userId }, function (data, status) {
+            $.get("/api/users/getsessionuser", function (data, status) {
                 user = data
                 userIsVisitor = userType[user.UserType] == "POSETILAC"; // za sad se generise samo sadrzaj za posetioca
                 userIsOwner = CheckIfUserOwner(user);
@@ -33,6 +35,7 @@
                 if (userIsOwner) {
                     $("#showEligibleTrainersButton").show();
                     $("#showFitnessCenterTrainersButton").show();
+                    $("#ownerDiv").show();
                 }
             });
         } else {
@@ -65,6 +68,7 @@
             $("#jedanTrening").html(data.TrainingCost);
             $("#grupniTrening").html(data.GroupTrainingCost);
             $("#personalniTrening").html(data.PersonalTrainingCost);
+            $("#fitnessCenterDetails").show();
 
             GenerateGroupTrainingsTable();
             GenerateCommentsTable();
@@ -77,7 +81,7 @@
         $.get("/api/grouptrainings", { 'fitnessId': id }, function (data, status) {
             // pravi tabelu sa grupnim treninzima
             // ako je ulogovan korisnik posetilac, dodaje se jos jedna kolona koja sluzi za prijavljivanje na trening
-            let tableContent = "<table border='1'><caption align='center'>Predstojeci grupni treninzi</caption><tr><th>Naziv</th><th>Vrsta treninga</th><th>Trajanje</th><th>Datum</th><th>Kapacitet</th><th>Broj prijavljenih</th>";
+            let tableContent = "<table id='groupTrainingsTable' border='1'><caption align='center'>Predstojeci grupni treninzi</caption><tr><th>Naziv</th><th>Vrsta treninga</th><th>Trajanje</th><th>Datum</th><th>Kapacitet</th><th>Broj prijavljenih</th>";
             if (userIsVisitor) {
                 tableContent += "<th></th>";
             }
@@ -123,13 +127,13 @@
         let tableContent = "";
         let userAlreadyApplied = CheckIfUserApplied(user.VisitingGroupTrainings, groupTraining);
         if (userAlreadyApplied) {
-            tableContent = `<td><font name=${groupTraining.Id} class='cannotApplyFont'>Prijavljen</font></td>`;
+            tableContent = `<td class='applyTd'><font name=${groupTraining.Id} class='cannotApplyFont'>Prijavljen</font></td>`;
             return tableContent;
         }
 
         let noRoom = groupTraining.VisitorCapacity == groupTraining.VisitorCount;
         if (noRoom) {
-            tableContent = `<td><font name=${groupTraining.Id} class='noCapacityFont'>Popunjeno</font></td>`;
+            tableContent = `<td class='applyTd'><font name=${groupTraining.Id} class='noCapacityFont'>Popunjeno</font></td>`;
             return tableContent;
         }
 
@@ -157,7 +161,7 @@
             */
             let tableContent = "<h3>Komentari</h3><dl>"
             for (comment in data) {
-                tableContent += `<dt>${data[comment].Creator.Username} : </dt><dd>${data[comment].Text}<br/>Ocena:${data[comment].Rating}`;
+                tableContent += `<dt>${data[comment].Creator.Username} : </dt><dd>${data[comment].Text}<br/><b>Ocena: ${data[comment].Rating}</b>`;
                 // userIsOwner je true ako je korisnik VLASNIK i ako je bas vlasnik ovog fitnes centra
                 // onda treba da moze da odobri/odbije komentare
                 if (userIsOwner) {
@@ -221,7 +225,7 @@
             text += "<font color='red'>Odbijen</font>";
             return text;
         }
-        text += `<button class='approveButton' name='${comment.Id}'>Odobri</button>&nbsp;<button class='approveButton' name='${comment.Id}'>Odbij</button>`;
+        text += `<button class='approveButton approveYes' name='${comment.Id}'>Odobri</button>&nbsp;<button class='approveButton approveNo' name='${comment.Id}'>Odbij</button>`;
         return text;
     }
 

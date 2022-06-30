@@ -88,7 +88,7 @@
     function GenerateProfileFields() {
         // poziva se samo ako je korisnik ulogovan
         id = sessionStorage.getItem("userId");
-        $.get('/api/users', { 'id': id }, function (result) {
+        $.get('/api/users/getsessionuser',  function (result) {
             $("#registerUsername").val(result.Username);
             $("#registerPassword").val(result.Password);
             $("#registerConfirmPassword").val(result.Password);

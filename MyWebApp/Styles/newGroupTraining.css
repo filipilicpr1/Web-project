@@ -1,5 +1,9 @@
-﻿caption {
-    font-size: 16px;
+﻿body {
+    background-color: mintcream
+}
+
+caption {
+    font-size: 20px;
     font-weight: bold;
     color: darkblue;
 }
@@ -17,15 +21,70 @@ div#groupTrainingsDiv {
 }
 
 button#createTrainingButton {
+    border: 2px solid black;
+    background-color: blue;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
     width: 100%;
     height: 100%;
 }
 
 button#editTrainingButton {
+    border: 2px solid black;
+    background-color: blue;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
     width: 100%;
     height: 100%;
 }
 
 input.timeInput {
     width: 30px;
+}
+
+select {
+    border: 1px solid black;
+    background-color: azure;
+    cursor: pointer;
+}
+
+button.showEditTrainingButton {
+    border: 1px solid black;
+    background-color: azure;
+    color: navy;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+}
+
+button.deleteTrainingButton {
+    border: 1px solid black;
+    background-color: azure;
+    color: red;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+}
+
+button#showNewTrainingTableButton {
+    border: 1px solid black;
+    background-color: azure;
+    color: navy;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+a.backLink {
+    background-color: red;
+    border: 2px solid black;
+    color: white;
+    padding: 5px 10px;
+    text-align: center;
+    display: inline-block;
+    font-size: 20px;
+    margin: 10px 0px;
+    cursor: pointer;
+    text-decoration: none;
 }

@@ -19,3 +19,4 @@
 1636824724;trener1;trener1;Trenerko;Treneric;Muski;tre@ner.com;05/04/2017;TRENER;True
 1667908152;trener2;trener2;Trenerko;Treneric;Muski;tre@ner.com;03/03/2020;TRENER;True
 516427054;trener5;trener5;Trenerko;Treneric;Muski;tre@ner.com;31/12/2013;TRENER;True
+1689686931;trener-1;trener-1;Trener;Trener;Muski;tt@tt.com;07/03/2016;TRENER;False

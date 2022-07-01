@@ -103,6 +103,7 @@ namespace MyWebApp.Models
                     break;
                 }
             }
+            GroupTrainings.CascadeDeletePastGroupTraining(fc);
             Users.BlockAllFitnessCenterTrainers(fc);
             SaveFitnessCenters();
         }

@@ -127,6 +127,30 @@ namespace MyWebApp.Models
             SaveGroupTrainings();
         }
 
+        public static void CascadeDeletePastGroupTraining(FitnessCenter fc)
+        {
+            foreach(var item in GroupTrainingsList)
+            {
+                if (item.Deleted)
+                {
+                    continue;
+                }
+                if (item.Upcoming)
+                {
+                    continue;
+                }
+                if(item.FitnessCenterLocation.Id != fc.Id)
+                {
+                    continue;
+                }
+                item.FitnessCenterLocation.Deleted = true;
+                item.Deleted = true;
+                Users.UpdateTrainingGroupTrainings(item);
+                Users.UpdateVisitingGroupTrainings(item);
+            }
+            SaveGroupTrainings();
+        }
+
         public static bool FitnessCenterHasUpcomingGroupTrainings(FitnessCenter fc)
         {
             foreach(var item in GroupTrainingsList)

@@ -261,6 +261,10 @@ namespace MyWebApp.Controllers
             {
                 return Request.CreateResponse(HttpStatusCode.Forbidden, "Not authorized");
             }
+            if (TrainerHasUpcomingTrainings(blockTrainer))
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Cannot block trainer with upcoming group trainings");
+            }
             Users.BlockTrainer(blockTrainer);
             return Request.CreateResponse(HttpStatusCode.OK, "Trener blokiran");
         }
@@ -274,6 +278,18 @@ namespace MyWebApp.Controllers
                     continue;
                 }
                 if(item.Id == trainer.FitnessCenterTrainer.Id)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private bool TrainerHasUpcomingTrainings(User trainer)
+        {
+            foreach (var item in trainer.TrainingGroupTrainings)
+            {
+                if (item.Upcoming)
                 {
                     return true;
                 }

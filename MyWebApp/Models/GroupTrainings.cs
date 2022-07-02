@@ -110,7 +110,7 @@ namespace MyWebApp.Models
             originalGt.Upcoming = CheckDate(originalGt.DateOfTraining);
             SaveGroupTrainings();
             Users.UpdateVisitingGroupTrainings(originalGt);
-            Users.UpdateVisitingGroupTrainings(originalGt);
+            Users.UpdateTrainingGroupTrainings(originalGt);
         }
 
         public static void DeleteGroupTraining(GroupTraining gt, User u)
@@ -242,6 +242,8 @@ namespace MyWebApp.Models
             foreach(var gt in GroupTrainingsList)
             {
                 gt.Upcoming = CheckDate(gt.DateOfTraining);
+                Users.UpdateTrainingGroupTrainings(gt);
+                Users.UpdateVisitingGroupTrainings(gt);
             }
         }
 

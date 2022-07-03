@@ -209,9 +209,9 @@
     }
     
     $("#visitorPretragaButton").click(function () {
-        let name = $("#nazivPretraga").val();
-        let trainingType = $("#tipPretraga").val();
-        let fitnessCenter = $("#fitnesCentarPretraga").val();
+        let name = $("#nazivPretraga").val().trim();
+        let trainingType = $("#tipPretraga").val().trim();
+        let fitnessCenter = $("#fitnesCentarPretraga").val().trim();
 
 
         if (name == "") {
@@ -226,7 +226,7 @@
             fitnessCenter = "noFitnessCenter";
         }
 
-        $.get(`/api/grouptrainings/${fitnessCenter}/${trainingType}/${name}`, function (data, status) {
+        $.get(`/api/grouptrainings/visitorsearch`, {'name' : name, 'trainingType' : trainingType, 'fitnessCenterName' : fitnessCenter}, function (data, status) {
             // ako je data null onda korisnik nije autorizovan, npr unese link u search bar
             if (data == null) {
                 $("#trainingTableDiv").html("<h1>Nema pravo da pristupite ovom sadrzaju</h1>");
@@ -240,10 +240,10 @@
     });
 
     $("#trainerPretragaButton").click(function () {
-        let minHour = $("#minHour").val() == "" ? "00" : $("#minHour").val();
-        let maxHour = $("#maxHour").val() == "" ? "23" : $("#maxHour").val();
-        let minMin = $("#minMin").val() == "" ? "00" : $("#minMin").val();
-        let maxMin = $("#maxMin").val == "" ? "59" : $("#maxMin").val();
+        let minHour = $("#minHour").val() == "" ? "00" : $("#minHour").val().trim();
+        let maxHour = $("#maxHour").val() == "" ? "23" : $("#maxHour").val().trim();
+        let minMin = $("#minMin").val() == "" ? "00" : $("#minMin").val().trim();
+        let maxMin = $("#maxMin").val == "" ? "59" : $("#maxMin").val().trim();
         
         if (!ValidateHourMinute(minHour,maxHour,minMin,maxMin)) {
             return;
@@ -258,8 +258,8 @@
         let minDate = GetTrainingDate(minYear, minMonth, minDay, minHour, minMin);
         let maxDate = GetTrainingDate(maxYear, maxMonth, maxDay, maxHour, maxMin);
 
-        let name = $("#nazivPretraga").val();
-        let trainingType = $("#tipPretraga").val();
+        let name = $("#nazivPretraga").val().trim();
+        let trainingType = $("#tipPretraga").val().trim();
         if (name == "") {
             name = "noName";
         }

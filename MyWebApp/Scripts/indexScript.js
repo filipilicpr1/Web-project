@@ -141,10 +141,10 @@
     // event handler kada se pritisne na dugme za pretragu
     // radi validaciju samo za unete godine, i to preko alert, izmeni da se crveni border
     $("#pretragaButton").click(function () {
-        let name = $("#nazivPretraga").val();
-        let address = $("#adresaPretraga").val();
-        let minYear = $("#minGodinaPretraga").val();
-        let maxYear = $("#maxGodinaPretraga").val();
+        let name = $("#nazivPretraga").val().trim();
+        let address = $("#adresaPretraga").val().trim();
+        let minYear = $("#minGodinaPretraga").val().trim();
+        let maxYear = $("#maxGodinaPretraga").val().trim();
         let invalid = false;
         // prvo stavim border da je normalan, pa ako neka godina nije dobra onda pocrvenim border
         $("#minGodinaPretraga").css("border", "1px solid black");
@@ -180,7 +180,7 @@
             maxYear = "10000";
         }
 
-        $.get(`/api/fitnesscenters/${name}/${address}/${minYear}/${maxYear}`, function (data, status) {
+        $.get(`/api/fitnesscenters/search`, {'name' : name, 'address' : address, 'minYear' : minYear, 'maxYear' : maxYear}, function (data, status) {
             GenerateTableContent(data);
         }).fail(function (data) {
             alert(data.responseJSON);

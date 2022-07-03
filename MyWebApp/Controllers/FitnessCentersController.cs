@@ -17,10 +17,17 @@ namespace MyWebApp.Controllers
             return Request.CreateResponse(HttpStatusCode.OK, FitnessCenters.FitnessCentersList.FindAll(item => !item.Deleted));
         }
 
-        
+
         // pretragu radi tako da ime fitnes centra sadrzi ovo ime, isto i za adresu
-        public HttpResponseMessage Get(string name, string address, int minYear, int maxYear)
+        [Route("api/fitnesscenters/search")]
+        [HttpGet]
+        [AllowAnonymous]
+        public HttpResponseMessage Get([FromUri]FitnessCenterSearchDTO fitnessCenterSearchDTO)
         {
+            string name = fitnessCenterSearchDTO.Name;
+            string address = fitnessCenterSearchDTO.Address;
+            int minYear = fitnessCenterSearchDTO.MinYear;
+            int maxYear = fitnessCenterSearchDTO.MaxYear;
             bool searchByName = !String.Equals(name, "noName");
             bool searchByAddress = !String.Equals(address, "noAddress");
 

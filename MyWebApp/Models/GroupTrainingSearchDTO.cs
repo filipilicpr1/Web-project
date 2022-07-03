@@ -9,6 +9,7 @@ namespace MyWebApp.Models
     {
         public string Name { get; set; }
         public string TrainingType { get; set; }
+        public string FitnessCenterName { get; set; }
         public DateTime MinDate { get; set; }
         public DateTime MaxDate { get; set; }
     }

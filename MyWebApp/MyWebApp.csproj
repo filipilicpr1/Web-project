@@ -170,6 +170,7 @@
     <Compile Include="Models\Comments.cs" />
     <Compile Include="Models\FitnessCenter.cs" />
     <Compile Include="Models\FitnessCenters.cs" />
+    <Compile Include="Models\FitnessCenterSearchDTO.cs" />
     <Compile Include="Models\GroupTraining.cs" />
     <Compile Include="Models\GroupTrainingSearchDTO.cs" />
     <Compile Include="Models\GroupTrainings.cs" />

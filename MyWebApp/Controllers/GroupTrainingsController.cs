@@ -382,7 +382,11 @@ namespace MyWebApp.Controllers
             return Request.CreateResponse(HttpStatusCode.OK, GroupTrainings.FindVisitedGroupTrainings(u));
         }
 
-        public HttpResponseMessage Get(string fitnessCenter, string name, string trainingType)
+
+        [Route("api/grouptrainings/visitorsearch")]
+        [HttpGet]
+        [AllowAnonymous]
+        public HttpResponseMessage Get([FromUri]GroupTrainingSearchDTO groupTrainingSearchDTO)
         {
             // provera da li je korisnik ulogovan
             // ako nije vrati null, ako jeste vrati tog korisnika
@@ -396,7 +400,7 @@ namespace MyWebApp.Controllers
             {
                 return Request.CreateResponse(HttpStatusCode.Forbidden, "Not authorized");
             }
-            return Request.CreateResponse(HttpStatusCode.OK, SearchVisitedTrainings(name, trainingType, fitnessCenter, u));
+            return Request.CreateResponse(HttpStatusCode.OK, SearchVisitedTrainings(groupTrainingSearchDTO.Name, groupTrainingSearchDTO.TrainingType, groupTrainingSearchDTO.FitnessCenterName, u));
         }
 
 
